@@ -1,0 +1,137 @@
+.dt-panel,
+.shell-panel {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--dt-border-soft);
+  border-radius: var(--dt-radius-md);
+  background: var(--dt-gradient-panel);
+  box-shadow: var(--dt-shadow-panel), var(--dt-shadow-inner), var(--dt-glow-soft);
+  backdrop-filter: blur(14px);
+  clip-path: polygon(
+    var(--dt-cut-md) 0,
+    calc(100% - var(--dt-cut-md)) 0,
+    100% var(--dt-cut-md),
+    100% calc(100% - var(--dt-cut-md)),
+    calc(100% - var(--dt-cut-md)) 100%,
+    var(--dt-cut-md) 100%,
+    0 calc(100% - var(--dt-cut-md)),
+    0 var(--dt-cut-md)
+  );
+  transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease, background 220ms ease, opacity 220ms ease;
+}
+
+.dt-panel--accent,
+.shell-accent {
+  border-color: rgba(124, 176, 206, 0.2);
+  box-shadow: var(--dt-shadow-panel), var(--dt-shadow-inner), var(--dt-glow-edge);
+}
+
+.dt-panel--interactive {
+  cursor: default;
+}
+
+.dt-panel--interactive:hover {
+  transform: var(--dt-hover-lift);
+  border-color: var(--dt-hover-border);
+  background: var(--dt-gradient-panel-hover);
+  box-shadow: var(--dt-shadow-panel), var(--dt-shadow-inner), var(--dt-glow-hover);
+}
+
+.dt-panel--cut-sm {
+  clip-path: polygon(
+    var(--dt-cut-sm) 0,
+    calc(100% - var(--dt-cut-sm)) 0,
+    100% var(--dt-cut-sm),
+    100% calc(100% - var(--dt-cut-sm)),
+    calc(100% - var(--dt-cut-sm)) 100%,
+    var(--dt-cut-sm) 100%,
+    0 calc(100% - var(--dt-cut-sm)),
+    0 var(--dt-cut-sm)
+  );
+}
+
+.dt-panel--cut-lg {
+  clip-path: polygon(
+    var(--dt-cut-lg) 0,
+    calc(100% - var(--dt-cut-lg)) 0,
+    100% var(--dt-cut-lg),
+    100% calc(100% - var(--dt-cut-lg)),
+    calc(100% - var(--dt-cut-lg)) 100%,
+    var(--dt-cut-lg) 100%,
+    0 calc(100% - var(--dt-cut-lg)),
+    0 var(--dt-cut-lg)
+  );
+}
+
+.dt-panel::before,
+.dt-panel::after,
+.shell-panel::before,
+.shell-panel::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+
+.dt-panel::before,
+.shell-panel::before {
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid rgba(215, 238, 247, 0.03);
+  mask: linear-gradient(135deg, rgba(0, 0, 0, 1), transparent 34%, transparent 66%, rgba(0, 0, 0, 1));
+}
+
+.dt-panel::after,
+.shell-panel::after {
+  top: 0;
+  left: -34%;
+  width: 24%;
+  height: 100%;
+  background: var(--dt-gradient-highlight);
+  filter: blur(12px);
+  opacity: 0.42;
+  transform: skewX(-22deg);
+  animation: shellSweep var(--dt-flow-duration-long) linear infinite;
+}
+
+.dt-frame-edge {
+  position: relative;
+}
+
+.dt-frame-edge::before {
+  content: "";
+  position: absolute;
+  left: 2%;
+  right: 2%;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(143, 212, 232, 0.46), transparent);
+  opacity: 0.58;
+}
+
+.dt-highlight-bar {
+  width: 100%;
+  height: 1px;
+  background: var(--dt-gradient-title-line);
+}
+
+.dt-highlight-ring {
+  box-shadow: 0 0 0 1px rgba(168, 220, 236, 0.18), var(--dt-glow-focus);
+}
+
+.dt-surface-shell {
+  background: var(--dt-gradient-panel);
+  border: 1px solid rgba(122, 166, 192, 0.14);
+  box-shadow: inset 0 1px 0 rgba(205, 231, 243, 0.05), inset 0 -20px 50px rgba(0, 0, 0, 0.38);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-panel,
+  .shell-panel {
+    transition: none;
+  }
+
+  .dt-panel::after,
+  .shell-panel::after {
+    animation: none;
+  }
+}

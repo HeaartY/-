@@ -1,0 +1,141 @@
+:root {
+  --dt-bg-canvas: #040b14;
+  --dt-bg-depth-1: #07121d;
+  --dt-bg-depth-2: #0b1b2b;
+  --dt-bg-depth-3: #10253a;
+
+  --dt-surface-1: rgba(8, 19, 34, 0.58);
+  --dt-surface-2: rgba(10, 24, 42, 0.72);
+  --dt-surface-3: rgba(16, 34, 55, 0.68);
+  --dt-surface-overlay: rgba(20, 42, 67, 0.34);
+  --dt-surface-hover: rgba(18, 38, 60, 0.78);
+
+  --dt-text-primary: rgba(219, 234, 244, 0.92);
+  --dt-text-secondary: rgba(171, 199, 214, 0.76);
+  --dt-text-tertiary: rgba(124, 160, 180, 0.56);
+  --dt-text-emphasis: rgba(215, 238, 247, 0.96);
+
+  --dt-accent-primary: rgba(121, 184, 214, 0.78);
+  --dt-accent-secondary: rgba(143, 212, 232, 0.9);
+  --dt-accent-assist: rgba(100, 199, 199, 0.72);
+  --dt-accent-specular: rgba(215, 238, 247, 0.92);
+
+  --dt-border-soft: rgba(122, 166, 192, 0.12);
+  --dt-border-medium: rgba(124, 176, 206, 0.24);
+  --dt-border-strong: rgba(144, 205, 224, 0.4);
+  --dt-border-highlight: rgba(168, 220, 236, 0.28);
+  --dt-border-opacity-low: 0.12;
+  --dt-border-opacity-mid: 0.24;
+  --dt-border-opacity-strong: 0.4;
+
+  --dt-shadow-deep: 0 24px 60px rgba(0, 0, 0, 0.36);
+  --dt-shadow-panel: 0 14px 40px rgba(0, 0, 0, 0.24);
+  --dt-shadow-inner: inset 0 1px 0 rgba(201, 226, 240, 0.08), inset 0 -14px 28px rgba(0, 0, 0, 0.24);
+  --dt-glow-soft: 0 0 24px rgba(100, 180, 210, 0.08);
+  --dt-glow-edge: 0 0 40px rgba(120, 191, 219, 0.12);
+  --dt-glow-hover: 0 0 34px rgba(126, 190, 216, 0.14);
+  --dt-glow-focus: 0 0 44px rgba(143, 212, 232, 0.16);
+  --dt-glow-accent: 0 0 16px rgba(100, 199, 199, 0.22);
+
+  --dt-radius-xs: 8px;
+  --dt-radius-sm: 12px;
+  --dt-radius-md: 18px;
+  --dt-radius-lg: 24px;
+  --dt-cut-sm: 10px;
+  --dt-cut-md: 16px;
+  --dt-cut-lg: 22px;
+
+  --dt-gradient-panel: linear-gradient(180deg, var(--dt-surface-3), var(--dt-surface-1));
+  --dt-gradient-panel-hover: linear-gradient(180deg, rgba(18, 42, 66, 0.84), rgba(8, 19, 34, 0.72));
+  --dt-gradient-title-line: linear-gradient(90deg, rgba(143, 212, 232, 0.34), transparent 82%);
+  --dt-gradient-highlight: linear-gradient(90deg, transparent, rgba(168, 220, 236, 0.22), transparent);
+  --dt-gradient-number: linear-gradient(180deg, rgba(215, 238, 247, 0.96), rgba(124, 198, 227, 0.86));
+  --dt-gradient-icon-shell: linear-gradient(180deg, rgba(18, 44, 68, 0.84), rgba(8, 20, 36, 0.34));
+  --dt-gradient-tab-active: linear-gradient(180deg, rgba(18, 43, 64, 0.92), rgba(9, 24, 38, 0.88));
+
+  --dt-panel-aux-bg: linear-gradient(180deg, rgba(12, 28, 44, 0.68), rgba(7, 18, 30, 0.54));
+  --dt-panel-aux-border: rgba(122, 166, 192, 0.1);
+  --dt-hud-surface-primary: linear-gradient(180deg, rgba(11, 28, 48, 0.82), rgba(6, 16, 30, 0.74));
+  --dt-hud-surface-secondary: linear-gradient(180deg, rgba(14, 32, 52, 0.62), rgba(7, 17, 30, 0.28));
+  --dt-hud-border: rgba(96, 194, 255, 0.18);
+  --dt-hud-border-strong: rgba(122, 220, 255, 0.3);
+  --dt-hud-glow: 0 0 20px rgba(38, 160, 255, 0.12);
+  --dt-hud-glow-strong: 0 0 30px rgba(28, 136, 255, 0.16);
+  --dt-chart-line: rgba(121, 184, 214, 0.82);
+  --dt-chart-line-dim: rgba(121, 184, 214, 0.34);
+  --dt-chart-fill: rgba(100, 199, 199, 0.1);
+  --dt-chart-dot: rgba(215, 238, 247, 0.82);
+  --dt-risk-high: rgba(240, 144, 108, 0.82);
+  --dt-risk-medium: rgba(220, 180, 110, 0.78);
+  --dt-risk-low: rgba(106, 188, 174, 0.76);
+  --dt-number-pop-duration: 900ms;
+  --dt-operate-normal: rgba(106, 188, 174, 0.86);
+  --dt-operate-warning: rgba(220, 180, 110, 0.82);
+  --dt-operate-alert: rgba(240, 144, 108, 0.84);
+  --dt-divider-line: rgba(122, 166, 192, 0.1);
+  --dt-topbar-strip: rgba(13, 31, 48, 0.72);
+
+  --dt-font-title-lg: 44px;
+  --dt-font-title-md: 24px;
+  --dt-font-label: 11px;
+  --dt-font-number: 40px;
+  --dt-letterspace-title: 0.12em;
+  --dt-letterspace-label: 0.24em;
+  --dt-letterspace-wide: 0.34em;
+
+  --dt-flow-duration-long: 11s;
+  --dt-flow-duration-mid: 8s;
+  --dt-pulse-duration: 5.8s;
+  --dt-hover-lift: translateY(-2px);
+  --dt-hover-border: rgba(168, 220, 236, 0.34);
+  --dt-active-glow: rgba(100, 199, 199, 0.22);
+
+  --dt-topbar-height: 85px;
+  --dt-rail-width: 400px;
+  --dt-bottom-height: 58px;
+  --dt-shell-gap: 18px;
+  --dt-screen-padding: 20px;
+  --dt-stage-width: 1920px;
+  --dt-stage-height: 1080px;
+  --dt-stage-scale: 1;
+
+  --dt-grid-major: 88px;
+  --dt-grid-minor: 22px;
+
+  --bg-0: var(--dt-bg-canvas);
+  --bg-1: var(--dt-bg-depth-1);
+  --bg-2: var(--dt-bg-depth-2);
+  --bg-3: var(--dt-bg-depth-3);
+  --surface-0: var(--dt-surface-1);
+  --surface-1: var(--dt-surface-2);
+  --surface-2: var(--dt-surface-3);
+  --surface-3: var(--dt-surface-overlay);
+  --text-main: var(--dt-text-primary);
+  --text-dim: var(--dt-text-secondary);
+  --text-faint: var(--dt-text-tertiary);
+  --accent-cool: var(--dt-accent-primary);
+  --accent-ice: var(--dt-accent-secondary);
+  --accent-teal: var(--dt-accent-assist);
+  --accent-white: var(--dt-accent-specular);
+  --line-soft: var(--dt-border-soft);
+  --line-mid: var(--dt-border-medium);
+  --line-strong: var(--dt-border-strong);
+  --shadow-deep: var(--dt-shadow-deep);
+  --shadow-panel: var(--dt-shadow-panel);
+  --shadow-inner: var(--dt-shadow-inner);
+  --glow-soft: var(--dt-glow-soft);
+  --glow-edge: var(--dt-glow-edge);
+  --radius-panel: var(--dt-radius-md);
+  --radius-soft: var(--dt-radius-sm);
+  --cut-size: var(--dt-cut-md);
+  --topbar-height: var(--dt-topbar-height);
+  --rail-width: var(--dt-rail-width);
+  --bottom-height: var(--dt-bottom-height);
+  --shell-gap: var(--dt-shell-gap);
+  --screen-padding: var(--dt-screen-padding);
+  --flow-duration-long: var(--dt-flow-duration-long);
+  --flow-duration-mid: var(--dt-flow-duration-mid);
+  --pulse-duration: var(--dt-pulse-duration);
+  --grid-major: var(--dt-grid-major);
+  --grid-minor: var(--dt-grid-minor);
+}
