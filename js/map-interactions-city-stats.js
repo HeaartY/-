@@ -1,4 +1,4 @@
-export class MapInteractions {
+export class MapInteractionsCityStats {
   constructor({ camera, domElement, pickables, hotspots, onRegionHover, onHotspotHover, onRegionClick }) {
     this.camera = camera;
     this.domElement = domElement;

@@ -139,15 +139,77 @@ body.screen {
   text-shadow: 0 0 12px rgba(88, 214, 255, 0.46), 0 0 26px rgba(28, 140, 255, 0.3);
 }
 
+.topbar__left-zone {
+  display: flex;
+  align-items: center;
+  justify-self: stretch;
+  min-width: 0;
+  gap: 18px;
+}
+
+.topbar__filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.topbar__filters[hidden] {
+  display: none;
+}
+
+.topbar__context-select {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar__context-select .biz-time-select__control {
+  min-width: 118px;
+}
+
 .topbar__hud-wing {
   position: relative;
   height: 80px;
   display: flex;
   align-items: center;
+  min-width: 0;
+}
+
+.topbar__hud-wing--left {
+  justify-self: stretch;
+  flex: 1 1 auto;
+  min-width: 180px;
 }
 
 .topbar__hud-wing--right {
   transform: scaleX(-1);
+  flex: 1 1 auto;
+  min-width: 180px;
+}
+
+.topbar__right-zone {
+  display: flex;
+  align-items: center;
+  justify-self: stretch;
+  min-width: 0;
+  gap: 18px;
+}
+
+.topbar__actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.topbar__time-select {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar__time-select .biz-time-select__control {
+  min-width: 128px;
 }
 
 .topbar__hud-svg {
@@ -271,11 +333,11 @@ body.screen {
 }
 
 .rail-module--ops {
-  flex: 0 0 auto;
+  flex: 1;
 }
 
 .rail-module--analysis {
-  flex: 1.64;
+  flex: 1;
 }
 
 .rail-module--ranking {
@@ -283,7 +345,7 @@ body.screen {
 }
 
 .rail-module--right-top {
-  flex: 2;
+  flex: 1;
 }
 
 .rail-module--right-bottom {
@@ -292,6 +354,52 @@ body.screen {
 
 .rail-module--risk {
   flex: 1.15;
+}
+
+.right-rail[data-topic-content="city-stats"] > section[data-workbench-trigger="hotrank"] {
+  flex: 2 1 0;
+}
+
+.right-rail[data-topic-content="city-stats"] > section[data-workbench-trigger="distribution"] {
+  flex: 1 1 0;
+}
+
+[data-topic-scope="special-analysis"].rail {
+  gap: 14px;
+}
+
+[data-topic-scope="special-analysis"] .special-analysis-module {
+  flex: 1;
+  min-height: 0;
+}
+
+[data-topic-scope="special-analysis"] .special-analysis-orders {
+  flex: 1.24;
+}
+
+[data-topic-scope="special-analysis"] .special-analysis-performance {
+  flex: 0.76;
+}
+
+[data-topic-scope="special-analysis"] .special-analysis-module__body {
+  min-height: 180px;
+}
+
+.appeal-rail-module {
+  min-height: 0;
+}
+
+.appeal-rail-module--top {
+  flex: 1;
+}
+
+.appeal-rail-module--bottom {
+  flex: 1;
+}
+
+.appeal-rail-module--top .module-body {
+  height: auto;
+  min-height: 16px;
 }
 
 .center-stage {
@@ -433,6 +541,31 @@ body.screen {
   transform: translateX(0);
 }
 
+[data-topic-scope="special-analysis"] .special-analysis-kpi-overlay {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  width: min(1240px, calc(100% - 140px));
+  z-index: 4;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+[data-topic-scope="special-analysis"] .special-analysis-layer-toolbar {
+  position: absolute;
+  top: 164px;
+  right: 34px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+[data-topic-scope="special-analysis"] .special-analysis-layer-toolbar[hidden] {
+  display: none;
+}
+
 .map-workbench {
   position: absolute;
   top: 22px;
@@ -475,6 +608,108 @@ body.screen {
   pointer-events: auto;
   opacity: 1;
   transform: translateX(0);
+}
+
+.special-analysis-ticket-panel {
+  position: absolute;
+  top: 22px;
+  left: 22px;
+  bottom: 22px;
+  width: min(520px, 39%);
+  z-index: 5;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-42px);
+  transition: opacity 220ms ease, transform 260ms ease;
+}
+
+.special-analysis-ticket-panel[data-special-analysis-ticket-state="open"] {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.special-analysis-ticket-detail-panel {
+  position: absolute;
+  top: 44px;
+  bottom: 44px;
+  left: calc(22px + min(520px, 39%) + 18px);
+  width: min(460px, 38%);
+  z-index: 6;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-38px);
+  transition: opacity 220ms ease, transform 260ms ease;
+}
+
+.special-analysis-ticket-detail-panel[data-special-analysis-ticket-detail-state="open"] {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.map-breadcrumb {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(8, 18, 32, 0.92);
+  border: 1px solid rgba(96, 194, 255, 0.18);
+  border-radius: 6px;
+  font-size: 13px;
+  color: rgba(220, 245, 255, 0.88);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 220ms ease, transform 260ms ease;
+}
+
+.map-breadcrumb[data-breadcrumb-state="drilled"] {
+  pointer-events: auto;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.map-breadcrumb__back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: rgba(120, 200, 255, 0.92);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: background 140ms, color 140ms;
+}
+
+.map-breadcrumb__back:hover {
+  background: rgba(96, 194, 255, 0.12);
+  color: rgba(200, 240, 255, 1);
+}
+
+.map-breadcrumb__back-icon {
+  font-size: 15px;
+  line-height: 1;
+}
+
+.map-breadcrumb__sep {
+  color: rgba(96, 194, 255, 0.36);
+  font-size: 12px;
+}
+
+.map-breadcrumb__province {
+  color: rgba(220, 245, 255, 0.72);
+}
+
+.map-breadcrumb__city {
+  color: rgba(220, 245, 255, 0.92);
+  font-weight: 600;
 }
 
 .center-stage__dock {

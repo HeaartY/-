@@ -1,5 +1,7 @@
 import { ParticleField } from './particles.js';
-import { TwinMapScene } from './map-scene.js';
+import { TwinMapSceneCityStats } from './map-scene-city-stats.js';
+import { TwinMapSceneAppealMap } from './map-scene-appeal-map.js';
+import { TwinMapSceneSpecialAnalysis } from './map-scene-special-analysis.js';
 
 const particleCanvas = document.querySelector('#particle-canvas');
 const clock = document.querySelector('#clock');
@@ -20,6 +22,14 @@ const CITY_PANEL_STATE = Object.fromEntries(
 const ORDERS_WORKBENCH_STATE = Object.fromEntries(
   CITY_TOPICS.map((topic) => [topic, { isOpen: false }])
 );
+const TIME_FILTER_OPTIONS = [
+  { value: 'today', label: '今日' },
+  { value: 'week', label: '本周' },
+  { value: 'month', label: '本月' },
+  { value: '30d', label: '近30日' },
+];
+const TIME_FILTER_DEFAULT = TIME_FILTER_OPTIONS[0].value;
+const TIME_FILTER_STATE = Object.fromEntries(['province-warning', ...CITY_TOPICS].map((topic) => [topic, TIME_FILTER_DEFAULT]));
 
 const particleField = particleCanvas ? new ParticleField(particleCanvas) : null;
 const twinMapScenes = new Map();
@@ -339,6 +349,22 @@ const BUSINESS_DATA = {
         { id: 'hr-6', title: '老旧小区水压波动咨询持续抬升', dept: '水务集团客服', type: '公共服务', source: '热线回访', area: '中山市 · 石岐街道', status: '已受理', statusTone: 'active', time: '08:14', elapsed: '受理 04分', level: 'low' },
       ],
     },
+    specialAnalysisItems: {
+      summaryLabel: '事项分析关联案件',
+      accent: '事项分析 Top10',
+      items: [
+        { id: 'sai-1', title: '校园周边占道经营诉求持续升温', dept: '属地综合执法队', type: '一级热点', source: '12345热线', area: '广州市 · 天河区', status: '处理中', statusTone: 'active', time: '09:26', elapsed: '流转 11分', level: 'high' },
+        { id: 'sai-2', title: '夜间施工噪声扰民重复来电预警', dept: '住建施工专班', type: '一级热点', source: '视频AI', area: '深圳市 · 南山区', status: '待响应', statusTone: 'pending', time: '09:18', elapsed: '入池 05分', level: 'high' },
+        { id: 'sai-3', title: '老旧小区停车矛盾工单量持续走高', dept: '区城运中心', type: '二级热点', source: '网格上报', area: '佛山市 · 南海区', status: '处理中', statusTone: 'active', time: '09:10', elapsed: '流转 08分', level: 'medium' },
+        { id: 'sai-4', title: '沿街商铺油烟投诉进入重点监测', dept: '生态环境分局', type: '二级热点', source: '随手拍', area: '东莞市 · 松山湖', status: '待核查', statusTone: 'pending', time: '08:58', elapsed: '入池 06分', level: 'medium' },
+        { id: 'sai-5', title: '住宅区充电安全隐患事项热度抬升', dept: '消防救援站', type: '三级热点', source: '物联感知', area: '珠海市 · 香洲区', status: '重点督办', statusTone: 'alert', time: '08:47', elapsed: '督办 12分', level: 'high' },
+        { id: 'sai-6', title: '景区周边摊贩秩序问题进入高发期', dept: '城管执法队', type: '三级热点', source: '12345热线', area: '中山市 · 石岐街道', status: '处理中', statusTone: 'active', time: '08:35', elapsed: '流转 09分', level: 'medium' },
+        { id: 'sai-7', title: '城中村环境卫生反复投诉进入榜单', dept: '街道办环卫专班', type: '一级热点', source: '网格上报', area: '广州市 · 白云区', status: '处理中', statusTone: 'active', time: '08:24', elapsed: '流转 07分', level: 'medium' },
+        { id: 'sai-8', title: '商业街消防通道堵塞事项出现反弹', dept: '消防救援支队', type: '二级热点', source: '视频AI', area: '深圳市 · 福田区', status: '待响应', statusTone: 'pending', time: '08:13', elapsed: '入池 04分', level: 'high' },
+        { id: 'sai-9', title: '学校周边交通秩序整治事项热度上升', dept: '交警支队', type: '三级热点', source: '随手拍', area: '佛山市 · 禅城区', status: '处理中', statusTone: 'active', time: '08:05', elapsed: '流转 10分', level: 'low' },
+        { id: 'sai-10', title: '餐饮集中区油烟异味事项进入前十', dept: '生态环境分局', type: '三级热点', source: '12345热线', area: '东莞市 · 南城街道', status: '已受理', statusTone: 'active', time: '07:56', elapsed: '受理 03分', level: 'low' },
+      ],
+    },
     provinceAcceptance: {
       summaryLabel: '省预警受理指标关联案件',
       accent: '自动分拨率 / 1 小时签收率 / 高频诉求',
@@ -654,6 +680,143 @@ const BUSINESS_DATA = {
       { label: '超时量', value: 10, unit: '件', format: 'integer', note: '夜间执法回传慢' },
     ],
   },
+  appealHotItem: {
+    level1: [
+      { label: '城市管理', value: 4286, ratio: 25.8 },
+      { label: '市场监管', value: 3942, ratio: 18.3 },
+      { label: '住房建设', value: 2618, ratio: 12.5 },
+      { label: '生态环境', value: 2344, ratio: 8.6 },
+      { label: '交通运输', value: 1826, ratio: 5.2 },
+      { label: '社会治安', value: 1650, ratio: 2.1 },
+      { label: '教育管理', value: 1480, ratio: -1.8 },
+      { label: '医疗卫生', value: 1320, ratio: -4.5 },
+      { label: '劳动保障', value: 1156, ratio: -7.2 },
+      { label: '农业农村', value: 980, ratio: -10.6 },
+    ],
+    level2: [
+      { label: '市容环卫', value: 3120, ratio: 22.4 },
+      { label: '违法建设', value: 2870, ratio: 16.8 },
+      { label: '消费维权', value: 2456, ratio: 11.2 },
+      { label: '噪声污染', value: 2130, ratio: 7.5 },
+      { label: '占道经营', value: 1890, ratio: 4.1 },
+      { label: '物业管理', value: 1720, ratio: 1.6 },
+      { label: '燃气安全', value: 1560, ratio: -2.3 },
+      { label: '食品安全', value: 1410, ratio: -5.8 },
+      { label: '水污染', value: 1250, ratio: -8.4 },
+      { label: '道路交通', value: 1080, ratio: -11.2 },
+    ],
+    level3: [
+      { label: '路面保洁', value: 2180, ratio: 19.6 },
+      { label: '餐饮油烟', value: 1940, ratio: 14.2 },
+      { label: '夜间施工', value: 1720, ratio: 9.8 },
+      { label: '无证摊贩', value: 1560, ratio: 5.4 },
+      { label: '垃圾分类', value: 1340, ratio: 2.1 },
+      { label: '违章停车', value: 1200, ratio: -0.8 },
+      { label: '施工扬尘', value: 1060, ratio: -4.2 },
+      { label: '电梯故障', value: 920, ratio: -7.6 },
+      { label: '井盖缺失', value: 780, ratio: -10.1 },
+      { label: '路灯损坏', value: 650, ratio: -13.5 },
+    ],
+  },
+  appealRegion: {
+    city: [
+      { label: '广州', value: 4286, color: '#57b8ff' },
+      { label: '深圳', value: 3942, color: '#4de0d4' },
+      { label: '佛山', value: 2618, color: '#8b9bff' },
+      { label: '东莞', value: 2344, color: '#ffb561' },
+      { label: '珠海', value: 1826, color: '#57b8ff' },
+      { label: '中山', value: 1560, color: '#4de0d4' },
+      { label: '惠州', value: 1340, color: '#8b9bff' },
+      { label: '江门', value: 1120, color: '#ffb561' },
+      { label: '肇庆', value: 960, color: '#57b8ff' },
+      { label: '汕头', value: 780, color: '#4de0d4' },
+    ],
+    street: [
+      { label: '石牌街道', value: 1260, color: '#57b8ff' },
+      { label: '北京街道', value: 1080, color: '#4de0d4' },
+      { label: '新港街道', value: 960, color: '#8b9bff' },
+      { label: '同和街道', value: 840, color: '#ffb561' },
+      { label: '嘉禾街道', value: 720, color: '#57b8ff' },
+      { label: '天河南街道', value: 640, color: '#4de0d4' },
+      { label: '林和街道', value: 560, color: '#8b9bff' },
+      { label: '沙河街道', value: 480, color: '#ffb561' },
+      { label: '兴华街道', value: 400, color: '#57b8ff' },
+      { label: '元岗街道', value: 340, color: '#4de0d4' },
+    ],
+    community: [
+      { label: '南村社区', value: 460, color: '#57b8ff' },
+      { label: '石牌社区', value: 380, color: '#4de0d4' },
+      { label: '珠江社区', value: 320, color: '#8b9bff' },
+      { label: '新港社区', value: 280, color: '#ffb561' },
+      { label: '棠下社区', value: 240, color: '#57b8ff' },
+      { label: '华景社区', value: 200, color: '#4de0d4' },
+      { label: '龙口社区', value: 170, color: '#8b9bff' },
+      { label: '猎德社区', value: 140, color: '#ffb561' },
+      { label: '洗村社区', value: 110, color: '#57b8ff' },
+      { label: '车陂社区', value: 86, color: '#4de0d4' },
+    ],
+  },
+  appealNewItem: {
+    level1: [
+      { label: '城市管理', value: 3860, ratio: 23.5 },
+      { label: '市场监管', value: 3520, ratio: 18.2 },
+      { label: '住房建设', value: 2340, ratio: 12.6 },
+      { label: '生态环境', value: 2080, ratio: 8.4 },
+      { label: '交通运输', value: 1640, ratio: 5.1 },
+    ],
+    level2: [
+      { label: '市容环卫', value: 2840, ratio: 21.8 },
+      { label: '违法建设', value: 2590, ratio: 16.5 },
+      { label: '消费维权', value: 2200, ratio: 11.2 },
+      { label: '噪声污染', value: 1920, ratio: 7.6 },
+      { label: '占道经营', value: 1700, ratio: 4.3 },
+    ],
+    level3: [
+      { label: '路面保洁', value: 1960, ratio: 19.4 },
+      { label: '餐饮油烟', value: 1740, ratio: 14.8 },
+      { label: '夜间施工', value: 1540, ratio: 9.6 },
+      { label: '无证摊贩', value: 1380, ratio: 6.2 },
+      { label: '垃圾分类', value: 1200, ratio: 3.4 },
+    ],
+  },
+  appealNewRegion: {
+    city: [
+      { label: '广州', value: 3860, color: '#57b8ff' },
+      { label: '深圳', value: 3520, color: '#4de0d4' },
+      { label: '佛山', value: 2340, color: '#8b9bff' },
+      { label: '东莞', value: 2080, color: '#ffb561' },
+      { label: '珠海', value: 1640, color: '#57b8ff' },
+      { label: '中山', value: 1380, color: '#4de0d4' },
+      { label: '惠州', value: 1180, color: '#8b9bff' },
+      { label: '江门', value: 980, color: '#ffb561' },
+      { label: '肇庆', value: 840, color: '#57b8ff' },
+      { label: '汕头', value: 680, color: '#4de0d4' },
+    ],
+    street: [
+      { label: '石牌街道', value: 1120, color: '#57b8ff' },
+      { label: '北京街道', value: 960, color: '#4de0d4' },
+      { label: '新港街道', value: 840, color: '#8b9bff' },
+      { label: '同和街道', value: 720, color: '#ffb561' },
+      { label: '嘉禾街道', value: 620, color: '#57b8ff' },
+      { label: '天河南街道', value: 540, color: '#4de0d4' },
+      { label: '林和街道', value: 460, color: '#8b9bff' },
+      { label: '沙河街道', value: 380, color: '#ffb561' },
+      { label: '兴华街道', value: 320, color: '#57b8ff' },
+      { label: '元岗街道', value: 260, color: '#4de0d4' },
+    ],
+    community: [
+      { label: '南村社区', value: 400, color: '#57b8ff' },
+      { label: '石牌社区', value: 340, color: '#4de0d4' },
+      { label: '珠江社区', value: 280, color: '#8b9bff' },
+      { label: '新港社区', value: 240, color: '#ffb561' },
+      { label: '棠下社区', value: 200, color: '#57b8ff' },
+      { label: '华景社区', value: 170, color: '#4de0d4' },
+      { label: '龙口社区', value: 140, color: '#8b9bff' },
+      { label: '猎德社区', value: 110, color: '#ffb561' },
+      { label: '洗村社区', value: 86, color: '#57b8ff' },
+      { label: '车陂社区', value: 64, color: '#4de0d4' },
+    ],
+  },
 };
 
 let chartUid = 0;
@@ -666,6 +829,7 @@ const WORKBENCH_SOURCE_MAP = {
   distribution: 'distribution',
   hotrank: 'hotrank',
   'hotrank-item': 'hotrank',
+  'special-analysis-items': 'specialAnalysisItems',
   'province-acceptance': 'provinceAcceptance',
   'province-closure': 'provinceClosure',
   'province-distribution': 'provinceDistribution',
@@ -681,6 +845,7 @@ const WORKBENCH_SOURCE_LABELS = {
   closureRate: '办结率 · 关联案件',
   distribution: '工单类型分布 · 关联案件',
   hotrank: '事件热点 Top5 · 关联案件',
+  specialAnalysisItems: '事项分析 · 关联案件',
   provinceAcceptance: '省预警受理指标 · 关联案件',
   provinceClosure: '省预警承办指标 · 关联案件',
   provinceDistribution: '省预警工单类型 · 关联案件',
@@ -704,6 +869,100 @@ const WORKBENCH_STATE = {
 const DETAIL_WORKBENCH_STATE = {
   isOpen: false,
   itemId: '',
+};
+const SPECIAL_ANALYSIS_KPI_DATA = [
+  { key: 'response-rate', label: '工单响应率', value: 98.6, unit: '%', delta: '环比 +1.2%', deltaClass: 'up' },
+  { key: 'resolve-rate', label: '解决率', value: 97.4, unit: '%', delta: '环比 +0.8%', deltaClass: 'up' },
+  { key: 'consult-satisfaction', label: '咨询满意率', value: 99.1, unit: '%', delta: '环比 +0.5%', deltaClass: 'up' },
+  { key: 'handling-satisfaction', label: '办理满意率', value: 96.8, unit: '%', delta: '环比 -0.2%', deltaClass: 'down' },
+  { key: 'dispatch-satisfaction', label: '交办满意率', value: 97.9, unit: '%', delta: '环比 +0.6%', deltaClass: 'up' },
+];
+const SPECIAL_ANALYSIS_KPI_RANKING_DATA = {
+  'response-rate': {
+    subtitle: '工单响应率',
+    top5: [
+      { label: '天河区政务服务中心', value: 99.8, meta: '环比 +1.4%' },
+      { label: '越秀区城运中心', value: 99.5, meta: '环比 +1.1%' },
+      { label: '南山区综合治理办', value: 99.2, meta: '环比 +0.8%' },
+      { label: '番禺区街面治理专班', value: 98.9, meta: '环比 +0.6%' },
+      { label: '白云区热线联动中心', value: 98.7, meta: '环比 +0.5%' },
+    ],
+    bottom5: [
+      { label: '宝安区热线联动中心', value: 94.6, meta: '环比 -0.8%' },
+      { label: '海珠区综合治理办', value: 95.1, meta: '环比 -0.5%' },
+      { label: '荔湾区城市治理办', value: 95.4, meta: '环比 -0.3%' },
+      { label: '黄埔区民生服务中心', value: 95.8, meta: '环比 -0.1%' },
+      { label: '福田区政务服务中心', value: 96.2, meta: '环比 +0.2%' },
+    ],
+  },
+  'resolve-rate': {
+    subtitle: '解决率',
+    top5: [
+      { label: '越秀区城运中心', value: 98.9, meta: '环比 +1.0%' },
+      { label: '天河区政务服务中心', value: 98.6, meta: '环比 +0.9%' },
+      { label: '白云区热线联动中心', value: 98.2, meta: '环比 +0.6%' },
+      { label: '南山区综合治理办', value: 97.9, meta: '环比 +0.5%' },
+      { label: '番禺区街面治理专班', value: 97.6, meta: '环比 +0.4%' },
+    ],
+    bottom5: [
+      { label: '海珠区综合治理办', value: 92.8, meta: '环比 -0.9%' },
+      { label: '宝安区热线联动中心', value: 93.4, meta: '环比 -0.7%' },
+      { label: '黄埔区民生服务中心', value: 94.1, meta: '环比 -0.4%' },
+      { label: '荔湾区城市治理办', value: 94.8, meta: '环比 -0.2%' },
+      { label: '福田区政务服务中心', value: 95.3, meta: '环比 +0.1%' },
+    ],
+  },
+  'consult-satisfaction': {
+    subtitle: '咨询满意率',
+    top5: [
+      { label: '南山区综合治理办', value: 99.9, meta: '环比 +0.7%' },
+      { label: '天河区政务服务中心', value: 99.7, meta: '环比 +0.6%' },
+      { label: '越秀区城运中心', value: 99.6, meta: '环比 +0.5%' },
+      { label: '白云区热线联动中心', value: 99.4, meta: '环比 +0.4%' },
+      { label: '番禺区街面治理专班', value: 99.2, meta: '环比 +0.3%' },
+    ],
+    bottom5: [
+      { label: '海珠区综合治理办', value: 95.6, meta: '环比 -0.6%' },
+      { label: '宝安区热线联动中心', value: 96.1, meta: '环比 -0.4%' },
+      { label: '黄埔区民生服务中心', value: 96.7, meta: '环比 -0.2%' },
+      { label: '荔湾区城市治理办', value: 97.2, meta: '环比 +0.1%' },
+      { label: '福田区政务服务中心', value: 97.8, meta: '环比 +0.2%' },
+    ],
+  },
+  'handling-satisfaction': {
+    subtitle: '办理满意率',
+    top5: [
+      { label: '天河区政务服务中心', value: 98.4, meta: '环比 +0.8%' },
+      { label: '越秀区城运中心', value: 98.1, meta: '环比 +0.7%' },
+      { label: '白云区热线联动中心', value: 97.7, meta: '环比 +0.5%' },
+      { label: '番禺区街面治理专班', value: 97.4, meta: '环比 +0.3%' },
+      { label: '南山区综合治理办', value: 97.1, meta: '环比 +0.2%' },
+    ],
+    bottom5: [
+      { label: '宝安区热线联动中心', value: 91.9, meta: '环比 -1.2%' },
+      { label: '海珠区综合治理办', value: 92.7, meta: '环比 -0.9%' },
+      { label: '黄埔区民生服务中心', value: 93.6, meta: '环比 -0.6%' },
+      { label: '荔湾区城市治理办', value: 94.2, meta: '环比 -0.4%' },
+      { label: '福田区政务服务中心', value: 95.1, meta: '环比 -0.1%' },
+    ],
+  },
+  'dispatch-satisfaction': {
+    subtitle: '交办满意率',
+    top5: [
+      { label: '越秀区城运中心', value: 99.1, meta: '环比 +0.9%' },
+      { label: '天河区政务服务中心', value: 98.8, meta: '环比 +0.8%' },
+      { label: '番禺区街面治理专班', value: 98.4, meta: '环比 +0.6%' },
+      { label: '白云区热线联动中心', value: 98.1, meta: '环比 +0.4%' },
+      { label: '南山区综合治理办', value: 97.8, meta: '环比 +0.3%' },
+    ],
+    bottom5: [
+      { label: '海珠区综合治理办', value: 93.2, meta: '环比 -0.7%' },
+      { label: '宝安区热线联动中心', value: 93.9, meta: '环比 -0.5%' },
+      { label: '黄埔区民生服务中心', value: 94.5, meta: '环比 -0.3%' },
+      { label: '荔湾区城市治理办', value: 95.2, meta: '环比 -0.2%' },
+      { label: '福田区政务服务中心', value: 95.8, meta: '环比 +0.1%' },
+    ],
+  },
 };
 
 window.particleField = particleField;
@@ -731,6 +990,41 @@ function getScopedTopicElement(topic, selector) {
 
 function getActiveCityTopic() {
   return CITY_TOPICS.includes(activeTopic) ? activeTopic : 'city-stats';
+}
+
+function getTimeFilterValue(topic) {
+  return TIME_FILTER_STATE[topic] ?? TIME_FILTER_DEFAULT;
+}
+
+function setTimeFilterValue(topic, value) {
+  TIME_FILTER_STATE[topic] = value;
+}
+
+function syncTimeFilterControls(topic = activeTopic) {
+  document.querySelectorAll('[data-page-time-filter] select').forEach((select) => {
+    select.value = getTimeFilterValue(topic);
+  });
+}
+
+
+function rerenderTopicPanels(topic) {
+  if (topic === 'province-warning') {
+    renderProvinceWarningCards();
+    return;
+  }
+
+  renderBasicInfoStats(topic);
+  renderBusinessCharts();
+  renderDistributionChart(topic);
+  renderRankSummary(topic);
+  renderRankList(topic);
+
+  if (topic === 'appeal-map') {
+    renderAppealHotItemChart(document.querySelector('[data-appeal-hotitem-tab.biz-hotrank__tab--active]')?.dataset.appealHotitemTab ?? 'level1');
+    renderAppealRegionChart(document.querySelector('[data-appeal-region-tab.biz-hotrank__tab--active]')?.dataset.appealRegionTab ?? 'city');
+    renderAppealNewItemChart(document.querySelector('[data-appeal-newitem-tab.biz-hotrank__tab--active]')?.dataset.appealNewitemTab ?? 'level1');
+    renderAppealNewRegionChart(document.querySelector('[data-appeal-newregion-tab.biz-hotrank__tab--active]')?.dataset.appealNewregionTab ?? 'city');
+  }
 }
 
 function getCityPanelState(topic = getActiveCityTopic()) {
@@ -1015,6 +1309,38 @@ function renderBasicInfoStats(topic = 'city-stats') {
   });
 }
 
+function getSpecialAnalysisKpiData() {
+  return SPECIAL_ANALYSIS_KPI_DATA;
+}
+
+function renderSpecialAnalysisKpiOverlay() {
+  const container = getScopedTopicElement('special-analysis', '[data-special-analysis-kpi]');
+  if (!container) return;
+
+  const items = getSpecialAnalysisKpiData();
+  container.innerHTML = `
+    <div class="special-analysis-kpi-overlay__frame">
+      <div class="special-analysis-kpi-overlay__list">
+        ${items
+          .map(
+            (item) => `
+              <article class="special-analysis-kpi-overlay__item" data-special-analysis-orders-trigger="kpi-unit-ranking" data-special-analysis-kpi-trigger="${item.key}" data-special-analysis-kpi-item="${item.key}" role="button" tabindex="0" aria-label="查看${item.label}单位排名">
+                <span class="special-analysis-kpi-overlay__label">${item.label}</span>
+                <div class="special-analysis-kpi-overlay__value-row">
+                  <span class="special-analysis-kpi-overlay__value" data-count-to="${item.value}" data-count-format="percent">0%</span>
+                </div>
+                <span class="special-analysis-kpi-overlay__delta special-analysis-kpi-overlay__delta--${item.deltaClass}">${item.delta}</span>
+              </article>
+            `
+          )
+          .join('')}
+      </div>
+    </div>
+  `;
+
+  animateCounts(container);
+}
+
 function renderRankSummary(topic = 'city-stats') {
   const { summary } = BUSINESS_DATA.districtRanking;
   getScopedTopicElements(topic, '[data-rank-summary]').forEach((container) => {
@@ -1273,6 +1599,25 @@ function renderCityPanel(topic = getActiveCityTopic()) {
   animateCounts(body);
 }
 
+function drilldownToCity(region, topic) {
+  if (!region?.name) return;
+  const breadcrumb = getScopedTopicElement(topic, '[data-breadcrumb]');
+  const cityLabel = getScopedTopicElement(topic, '[data-breadcrumb-city]');
+  if (breadcrumb) breadcrumb.dataset.breadcrumbState = 'drilled';
+  if (cityLabel) cityLabel.textContent = region.name;
+  twinMapScenes.get(topic)?.drilldownToCity(region);
+}
+
+function drillbackToProvince(topic) {
+  const breadcrumb = getScopedTopicElement(topic, '[data-breadcrumb]');
+  const cityLabel = getScopedTopicElement(topic, '[data-breadcrumb-city]');
+  if (breadcrumb) {
+    delete breadcrumb.dataset.breadcrumbState;
+  }
+  if (cityLabel) cityLabel.textContent = '';
+  twinMapScenes.get(topic)?.resetView();
+}
+
 function openCityPanel(cityName, topic = getActiveCityTopic()) {
   if (!cityName) return;
   const state = getCityPanelState(topic);
@@ -1514,6 +1859,125 @@ function renderHorizontalRankChart(container, items, options = {}) {
         .join('')}
     </div>
   `;
+}
+
+function renderAppealHotItemChart(tabKey = 'level1') {
+  const container = document.querySelector('[data-appeal-hotitem-chart]');
+  if (!container) return;
+  const items = BUSINESS_DATA.appealHotItem[tabKey] ?? [];
+  renderHorizontalRankChart(container, items, { jumpKind: 'appeal-hotitem' });
+}
+
+function renderAppealRegionChart(tabKey = 'city') {
+  const container = document.querySelector('[data-appeal-region-chart]');
+  if (!container) return;
+  const items = BUSINESS_DATA.appealRegion[tabKey] ?? [];
+  renderProvinceSharedAxisBarChart(container, items);
+}
+
+function bindAppealHotItemTabs() {
+  const tabBar = document.querySelector('[data-appeal-hotitem-tabs]');
+  if (!tabBar) return;
+  tabBar.addEventListener('click', (event) => {
+    const tab = event.target.closest('[data-appeal-hotitem-tab]');
+    if (!tab) return;
+    tabBar.querySelectorAll('[data-appeal-hotitem-tab]').forEach((t) => t.classList.remove('biz-hotrank__tab--active'));
+    tab.classList.add('biz-hotrank__tab--active');
+    renderAppealHotItemChart(tab.dataset.appealHotitemTab);
+  });
+}
+
+function bindAppealRegionTabs() {
+  const tabBar = document.querySelector('[data-appeal-region-tabs]');
+  if (!tabBar) return;
+  tabBar.addEventListener('click', (event) => {
+    const tab = event.target.closest('[data-appeal-region-tab]');
+    if (!tab) return;
+    tabBar.querySelectorAll('[data-appeal-region-tab]').forEach((t) => t.classList.remove('biz-hotrank__tab--active'));
+    tab.classList.add('biz-hotrank__tab--active');
+    renderAppealRegionChart(tab.dataset.appealRegionTab);
+  });
+}
+
+function renderAppealNewItemChart(tabKey = 'level1') {
+  const container = document.querySelector('[data-appeal-newitem-chart]');
+  if (!container) return;
+  const items = BUSINESS_DATA.appealNewItem[tabKey] ?? [];
+  renderNewItemRankChart(container, items);
+}
+
+function renderNewItemRankChart(container, items) {
+  if (!container) return;
+  const getRatioColor = (ratio) => {
+    if (ratio > 10) return 'red';
+    if (ratio > 0) return 'yellow';
+    return 'green';
+  };
+  const formatRatio = (ratio) => {
+    const sign = ratio > 0 ? '+' : '';
+    return `${sign}${ratio}%`;
+  };
+  container.innerHTML = `
+    <div class="newitem-rank">
+      ${items.map((item, index) => {
+        const color = getRatioColor(item.ratio);
+        return `
+          <button class="newitem-rank__row" type="button" data-orders-jump="appeal-hotitem" data-orders-value="${item.label}" aria-label="查看${item.label}事项详情">
+            <span class="newitem-rank__index">${index + 1}</span>
+            <span class="newitem-rank__label">${item.label}</span>
+            <span class="newitem-rank__trend newitem-rank__trend--${color}">
+              <svg class="newitem-rank__icon" viewBox="0 0 12 12" fill="currentColor">
+                <path d="M6 2L10 7H2L6 2Z"/>
+              </svg>
+              <span class="newitem-rank__ratio">${formatRatio(item.ratio)}</span>
+            </span>
+            <span class="newitem-rank__value">${item.value.toLocaleString('en-US')}</span>
+          </button>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderAppealNewRegionChart(tabKey = 'city') {
+  const container = document.querySelector('[data-appeal-newregion-chart]');
+  if (!container) return;
+  const items = BUSINESS_DATA.appealNewRegion[tabKey] ?? [];
+  renderProvinceSharedAxisBarChart(container, items);
+}
+
+function bindAppealNewItemTabs() {
+  const tabBar = document.querySelector('[data-appeal-newitem-tabs]');
+  if (!tabBar) return;
+  tabBar.addEventListener('click', (event) => {
+    const tab = event.target.closest('[data-appeal-newitem-tab]');
+    if (!tab) return;
+    tabBar.querySelectorAll('[data-appeal-newitem-tab]').forEach((t) => t.classList.remove('biz-hotrank__tab--active'));
+    tab.classList.add('biz-hotrank__tab--active');
+    renderAppealNewItemChart(tab.dataset.appealNewitemTab);
+  });
+}
+
+function bindAppealNewRegionTabs() {
+  const tabBar = document.querySelector('[data-appeal-newregion-tabs]');
+  if (!tabBar) return;
+  tabBar.addEventListener('click', (event) => {
+    const tab = event.target.closest('[data-appeal-newregion-tab]');
+    if (!tab) return;
+    tabBar.querySelectorAll('[data-appeal-newregion-tab]').forEach((t) => t.classList.remove('biz-hotrank__tab--active'));
+    tab.classList.add('biz-hotrank__tab--active');
+    renderAppealNewRegionChart(tab.dataset.appealNewregionTab);
+  });
+}
+
+function bindTimeFilters() {
+  document.addEventListener('change', (event) => {
+    const select = event.target.closest('[data-page-time-filter] select');
+    if (!select) return;
+    setTimeFilterValue(activeTopic, select.value);
+    rerenderTopicPanels(activeTopic);
+    syncTimeFilterControls(activeTopic);
+  });
 }
 
 function renderOrdersTrendChart(container, points, labels) {
@@ -1969,6 +2433,12 @@ function openWorkbench(triggerSource, area = '') {
 }
 
 function openWorkbenchFromOrdersJump(kind, value) {
+  // 诉求事件地图的热点事项使用专门的弹窗
+  if (kind === 'appeal-hotitem') {
+    openAppealDetailPanel(value);
+    return;
+  }
+
   WORKBENCH_STATE.isOpen = true;
   WORKBENCH_STATE.source = 'distribution';
   WORKBENCH_STATE.page = 1;
@@ -2007,6 +2477,1956 @@ function openWorkbenchFromOrdersJump(kind, value) {
   renderWorkbench();
 }
 
+// 诉求事项详情弹窗状态
+const APPEAL_DETAIL_STATE = {
+  isOpen: false,
+  itemName: '',
+  value: 0,
+  ratio: 0,
+};
+
+const SPECIAL_ANALYSIS_PANEL_STATE = {
+  isOpen: false,
+};
+
+const SPECIAL_ANALYSIS_DETAIL_STATE = {
+  isOpen: false,
+  itemName: '',
+  value: 0,
+  ratio: 0,
+  areaLevel: 'district',
+  activeDistrict: '',
+};
+
+const BOTTLENECK_PANEL_STATE = {
+  isOpen: false,
+  type: '',
+  activeDept: '',
+};
+
+const SPECIAL_ANALYSIS_ORDERS_STATE = {
+  isOpen: false,
+  metric: '',
+  activeDept: '',
+  activeUnit: '',
+  activeFocus: '',
+};
+
+const SPECIAL_ANALYSIS_TICKET_STATE = {
+  isOpen: false,
+  category: '',
+};
+
+const SPECIAL_ANALYSIS_TICKET_DETAIL_STATE = {
+  isOpen: false,
+  itemId: '',
+};
+
+
+function openAppealDetailPanel(itemName) {
+  APPEAL_DETAIL_STATE.isOpen = true;
+  APPEAL_DETAIL_STATE.itemName = itemName;
+
+  // 从数据中查找对应事项
+  const allItems = [
+    ...BUSINESS_DATA.appealHotItem.level1,
+    ...BUSINESS_DATA.appealHotItem.level2,
+    ...BUSINESS_DATA.appealHotItem.level3,
+  ];
+  const item = allItems.find((i) => i.label === itemName);
+  if (item) {
+    APPEAL_DETAIL_STATE.value = item.value;
+    APPEAL_DETAIL_STATE.ratio = item.ratio ?? 0;
+  }
+
+  renderAppealDetailPanel();
+}
+
+function closeAppealDetailPanel() {
+  APPEAL_DETAIL_STATE.isOpen = false;
+  renderAppealDetailPanel();
+}
+
+function openSpecialAnalysisPanel() {
+  SPECIAL_ANALYSIS_PANEL_STATE.isOpen = true;
+  renderSpecialAnalysisPanel();
+}
+
+function closeSpecialAnalysisPanel() {
+  SPECIAL_ANALYSIS_PANEL_STATE.isOpen = false;
+  renderSpecialAnalysisPanel();
+}
+
+function openSpecialAnalysisDetailPanel(itemName) {
+  SPECIAL_ANALYSIS_DETAIL_STATE.isOpen = true;
+  SPECIAL_ANALYSIS_DETAIL_STATE.itemName = itemName;
+  SPECIAL_ANALYSIS_DETAIL_STATE.areaLevel = 'district';
+  SPECIAL_ANALYSIS_DETAIL_STATE.activeDistrict = '';
+  const items = [
+    { label: '校园周边占道经营', value: 1286, ratio: 12 },
+    { label: '夜间施工噪声扰民', value: 1042, ratio: -6 },
+    { label: '老旧小区停车矛盾', value: 896, ratio: 9 },
+    { label: '沿街商铺油烟投诉', value: 774, ratio: -4 },
+    { label: '住宅区充电安全隐患', value: 683, ratio: 15 },
+    { label: '城中村环境卫生反复投诉', value: 642, ratio: 7 },
+    { label: '商业街消防通道堵塞', value: 598, ratio: -3 },
+    { label: '学校周边交通秩序整治', value: 544, ratio: 11 },
+    { label: '餐饮集中区油烟异味', value: 503, ratio: 5 },
+    { label: '老旧社区照明故障投诉', value: 468, ratio: -2 },
+  ];
+  const item = items.find((entry) => entry.label === itemName);
+  if (item) {
+    SPECIAL_ANALYSIS_DETAIL_STATE.value = item.value;
+    SPECIAL_ANALYSIS_DETAIL_STATE.ratio = item.ratio;
+  }
+  renderSpecialAnalysisDetailPanel();
+}
+
+function closeSpecialAnalysisDetailPanel() {
+  SPECIAL_ANALYSIS_DETAIL_STATE.isOpen = false;
+  renderSpecialAnalysisDetailPanel();
+}
+
+function openBottleneckPanel(type) {
+  BOTTLENECK_PANEL_STATE.isOpen = true;
+  BOTTLENECK_PANEL_STATE.type = type;
+  BOTTLENECK_PANEL_STATE.activeDept = '';
+  renderBottleneckPanel();
+}
+
+function closeBottleneckPanel() {
+  BOTTLENECK_PANEL_STATE.isOpen = false;
+  renderBottleneckPanel();
+}
+
+function openSpecialAnalysisOrdersPanel(metric, activeUnit = '', activeFocus = '') {
+  SPECIAL_ANALYSIS_ORDERS_STATE.isOpen = true;
+  SPECIAL_ANALYSIS_ORDERS_STATE.metric = metric;
+  SPECIAL_ANALYSIS_ORDERS_STATE.activeDept = '';
+  SPECIAL_ANALYSIS_ORDERS_STATE.activeUnit = activeUnit;
+  SPECIAL_ANALYSIS_ORDERS_STATE.activeFocus = activeFocus;
+  renderSpecialAnalysisOrdersPanel();
+}
+
+function closeSpecialAnalysisOrdersPanel() {
+  SPECIAL_ANALYSIS_ORDERS_STATE.isOpen = false;
+  SPECIAL_ANALYSIS_ORDERS_STATE.activeUnit = '';
+  SPECIAL_ANALYSIS_ORDERS_STATE.activeFocus = '';
+  renderSpecialAnalysisOrdersPanel();
+}
+
+function getSpecialAnalysisOrdersPanelConfig() {
+  const activeUnit = SPECIAL_ANALYSIS_ORDERS_STATE.activeUnit || '';
+  const metric = SPECIAL_ANALYSIS_ORDERS_STATE.metric;
+  const activeKpiKey = SPECIAL_ANALYSIS_ORDERS_STATE.activeFocus || '';
+  const activeKpiRanking = SPECIAL_ANALYSIS_KPI_RANKING_DATA[activeKpiKey] ?? null;
+
+  const config = {
+    'total-orders': {
+      layout: 'summary',
+      subtitle: '总工单量',
+      regions: [
+        { label: '天河区', value: 3486 },
+        { label: '越秀区', value: 3184 },
+        { label: '海珠区', value: 2868 },
+        { label: '番禺区', value: 2526 },
+        { label: '白云区', value: 2312 },
+      ],
+      top10: [
+        { label: '天河区', value: 3486, color: '#57b8ff' },
+        { label: '越秀区', value: 3184, color: '#4de0d4' },
+        { label: '海珠区', value: 2868, color: '#8b9bff' },
+        { label: '番禺区', value: 2526, color: '#ffb561' },
+        { label: '白云区', value: 2312, color: '#73d5ff' },
+        { label: '黄埔区', value: 2148, color: '#7ca8ff' },
+        { label: '荔湾区', value: 1986, color: '#57b8ff' },
+        { label: '南山区', value: 1862, color: '#4de0d4' },
+        { label: '福田区', value: 1728, color: '#8b9bff' },
+        { label: '宝安区', value: 1604, color: '#ffb561' },
+      ],
+    },
+    'avg-duration': {
+      layout: 'summary',
+      subtitle: '平均时长',
+      regions: [
+        { label: '白云区', value: 26.4 },
+        { label: '番禺区', value: 24.8 },
+        { label: '海珠区', value: 22.6 },
+        { label: '越秀区', value: 20.3 },
+        { label: '天河区', value: 18.6 },
+      ],
+      top10: [
+        { label: '白云区', value: 264, color: '#57b8ff' },
+        { label: '番禺区', value: 248, color: '#4de0d4' },
+        { label: '海珠区', value: 226, color: '#8b9bff' },
+        { label: '越秀区', value: 203, color: '#ffb561' },
+        { label: '天河区', value: 186, color: '#73d5ff' },
+        { label: '黄埔区', value: 178, color: '#7ca8ff' },
+        { label: '南山区', value: 171, color: '#57b8ff' },
+        { label: '宝安区', value: 166, color: '#4de0d4' },
+        { label: '福田区', value: 159, color: '#8b9bff' },
+        { label: '荔湾区', value: 152, color: '#ffb561' },
+      ],
+    },
+    'change-rate': {
+      layout: 'summary',
+      subtitle: '环比变化',
+      regions: [
+        { label: '南山区', value: 32 },
+        { label: '天河区', value: 28 },
+        { label: '海珠区', value: 24 },
+        { label: '越秀区', value: 21 },
+        { label: '番禺区', value: 18 },
+      ],
+      top10: [
+        { label: '南山区', value: 320, color: '#57b8ff' },
+        { label: '天河区', value: 280, color: '#4de0d4' },
+        { label: '海珠区', value: 240, color: '#8b9bff' },
+        { label: '越秀区', value: 210, color: '#ffb561' },
+        { label: '番禺区', value: 180, color: '#73d5ff' },
+        { label: '白云区', value: 162, color: '#7ca8ff' },
+        { label: '黄埔区', value: 148, color: '#57b8ff' },
+        { label: '福田区', value: 136, color: '#4de0d4' },
+        { label: '宝安区', value: 122, color: '#8b9bff' },
+        { label: '荔湾区', value: 108, color: '#ffb561' },
+      ],
+    },
+    'in-transit': {
+      layout: 'in-transit',
+      subtitle: '在途工单',
+      depts: [
+        {
+          name: '天河区政务服务中心',
+          count: 628,
+          trend: [482, 508, 536, 552, 588, 614],
+          warnings: [
+            '石牌街道噪声扰民工单超24小时未办结',
+            '员村片区道路积水工单连续预警',
+            '珠江新城商圈油烟投诉重复流转',
+          ],
+        },
+        {
+          name: '越秀区城运中心',
+          count: 574,
+          trend: [438, 452, 476, 501, 536, 574],
+          warnings: [
+            '北京街道施工噪声工单待现场核查',
+            '东山街道消防通道堵塞工单超时',
+            '洪桥街道占道经营工单二次退回',
+          ],
+        },
+        {
+          name: '海珠区综合治理办',
+          count: 521,
+          trend: [396, 418, 437, 463, 492, 521],
+          warnings: [
+            '新港街道道路积水工单办理进度滞后',
+            '江南中街道油烟扰民工单重复上报',
+            '赤岗街道夜间施工工单待签收',
+          ],
+        },
+        {
+          name: '番禺区街面治理专班',
+          count: 486,
+          trend: [362, 388, 406, 432, 458, 486],
+          warnings: [
+            '市桥街道占道经营工单超时预警',
+            '南村镇停车矛盾工单待部门联办',
+            '大石街道商业街秩序工单重复退回',
+          ],
+        },
+        {
+          name: '白云区热线联动中心',
+          count: 452,
+          trend: [338, 352, 374, 398, 421, 452],
+          warnings: [
+            '同和街道噪声扰民工单处置超时',
+            '嘉禾街道充电安全隐患工单待复核',
+            '棠景街道油烟投诉工单重复预警',
+          ],
+        },
+      ],
+    },
+    'kpi-unit-ranking': {
+      layout: 'kpi-unit-ranking',
+      subtitle: activeKpiRanking?.subtitle ?? '单位排名',
+      top5: activeKpiRanking?.top5 ?? [],
+      bottom5: activeKpiRanking?.bottom5 ?? [],
+    },
+    'orders-more': {
+      layout: 'orders-more',
+      subtitle: '更多',
+      undertakingTop5: [
+        { label: '天河区政务服务中心', value: 1286, meta: '环比变化量 +84' },
+        { label: '越秀区城运中心', value: 1124, meta: '环比变化量 +63' },
+        { label: '南山区综合治理办', value: 986, meta: '环比变化量 +51' },
+        { label: '番禺区街面治理专班', value: 874, meta: '环比变化量 +38' },
+        { label: '宝安区热线联动中心', value: 816, meta: '环比变化量 +26' },
+      ],
+      handlingTop5: [
+        { label: '天河区政务服务中心', value: 1198, meta: '环比变化量 +76' },
+        { label: '越秀区城运中心', value: 1086, meta: '环比变化量 +58' },
+        { label: '南山区综合治理办', value: 952, meta: '环比变化量 +46' },
+        { label: '番禺区街面治理专班', value: 836, meta: '环比变化量 +35' },
+        { label: '宝安区热线联动中心', value: 788, meta: '环比变化量 +22' },
+      ],
+    },
+    'unit-dispatch': {
+      layout: 'unit-dispatch',
+      subtitle: '交办单分析',
+      focusTop5: [
+        {
+          label: '夜间施工噪声扰民',
+          trend: [62, 74, 88, 96, 108, 126],
+          types: [
+            { label: '投诉', value: 46 },
+            { label: '求助', value: 28 },
+            { label: '举报', value: 24 },
+            { label: '咨询', value: 18 },
+            { label: '其他', value: 10 },
+          ],
+          areas: [
+            { label: '天河区', value: 86 },
+            { label: '越秀区', value: 78 },
+            { label: '海珠区', value: 69 },
+            { label: '番禺区', value: 58 },
+            { label: '白云区', value: 46 },
+          ],
+          closures: [
+            { label: '石牌街道办', value: 42, color: '#57b8ff' },
+            { label: '北京街道办', value: 38, color: '#4de0d4' },
+            { label: '新港街道办', value: 33, color: '#8b9bff' },
+            { label: '市桥街道办', value: 28, color: '#ffb561' },
+            { label: '同和街道办', value: 24, color: '#73d5ff' },
+          ],
+        },
+        {
+          label: '校园周边占道经营',
+          trend: [58, 68, 82, 91, 102, 114],
+          types: [
+            { label: '投诉', value: 42 },
+            { label: '举报', value: 30 },
+            { label: '求助', value: 22 },
+            { label: '咨询', value: 12 },
+            { label: '其他', value: 8 },
+          ],
+          areas: [
+            { label: '天河区', value: 82 },
+            { label: '番禺区', value: 74 },
+            { label: '越秀区', value: 66 },
+            { label: '海珠区', value: 54 },
+            { label: '白云区', value: 41 },
+          ],
+          closures: [
+            { label: '石牌街道办', value: 39, color: '#57b8ff' },
+            { label: '南村镇街道办', value: 35, color: '#4de0d4' },
+            { label: '北京街道办', value: 30, color: '#8b9bff' },
+            { label: '赤岗街道办', value: 26, color: '#ffb561' },
+            { label: '嘉禾街道办', value: 22, color: '#73d5ff' },
+          ],
+        },
+        {
+          label: '沿街商铺油烟投诉',
+          trend: [52, 63, 76, 84, 92, 96],
+          types: [
+            { label: '投诉', value: 44 },
+            { label: '举报', value: 26 },
+            { label: '求助', value: 14 },
+            { label: '咨询', value: 8 },
+            { label: '其他', value: 4 },
+          ],
+          areas: [
+            { label: '海珠区', value: 74 },
+            { label: '越秀区', value: 68 },
+            { label: '白云区', value: 59 },
+            { label: '天河区', value: 51 },
+            { label: '番禺区', value: 43 },
+          ],
+          closures: [
+            { label: '江南中街道办', value: 34, color: '#57b8ff' },
+            { label: '北京街道办', value: 31, color: '#4de0d4' },
+            { label: '棠景街道办', value: 27, color: '#8b9bff' },
+            { label: '石牌街道办', value: 24, color: '#ffb561' },
+            { label: '大石街道办', value: 21, color: '#73d5ff' },
+          ],
+        },
+        {
+          label: '商业街消防通道堵塞',
+          trend: [46, 55, 63, 71, 77, 82],
+          types: [
+            { label: '举报', value: 34 },
+            { label: '投诉', value: 24 },
+            { label: '求助', value: 12 },
+            { label: '咨询', value: 7 },
+            { label: '其他', value: 5 },
+          ],
+          areas: [
+            { label: '南山区', value: 68 },
+            { label: '天河区', value: 61 },
+            { label: '越秀区', value: 52 },
+            { label: '海珠区', value: 44 },
+            { label: '白云区', value: 38 },
+          ],
+          closures: [
+            { label: '珠江街道办', value: 29, color: '#57b8ff' },
+            { label: '石牌街道办', value: 26, color: '#4de0d4' },
+            { label: '东山街道办', value: 23, color: '#8b9bff' },
+            { label: '赤岗街道办', value: 20, color: '#ffb561' },
+            { label: '同和街道办', value: 17, color: '#73d5ff' },
+          ],
+        },
+        {
+          label: '老旧小区停车矛盾',
+          trend: [42, 51, 60, 67, 71, 74],
+          types: [
+            { label: '投诉', value: 28 },
+            { label: '求助', value: 20 },
+            { label: '咨询', value: 14 },
+            { label: '举报', value: 7 },
+            { label: '其他', value: 5 },
+          ],
+          areas: [
+            { label: '番禺区', value: 63 },
+            { label: '天河区', value: 56 },
+            { label: '海珠区', value: 48 },
+            { label: '越秀区', value: 41 },
+            { label: '白云区', value: 35 },
+          ],
+          closures: [
+            { label: '市桥街道办', value: 27, color: '#57b8ff' },
+            { label: '石牌街道办', value: 24, color: '#4de0d4' },
+            { label: '新港街道办', value: 21, color: '#8b9bff' },
+            { label: '北京街道办', value: 18, color: '#ffb561' },
+            { label: '同和街道办', value: 15, color: '#73d5ff' },
+          ],
+        },
+      ],
+    },
+    'warning-group-issue-count': {
+      layout: 'governance-warning-detail',
+      subtitle: '群发事项监测数量',
+      groupIssues: [
+        { label: '夜间施工噪声扰民', value: 132 },
+        { label: '校园周边占道经营', value: 118 },
+        { label: '沿街商铺油烟投诉', value: 104 },
+        { label: '商业街消防通道堵塞', value: 92 },
+        { label: '学校周边交通秩序整治', value: 86 },
+      ],
+      frequentIssues: [
+        { label: '道路积水重复上报', value: 128 },
+        { label: '老旧小区停车矛盾', value: 116 },
+        { label: '商业综合体秩序问题', value: 98 },
+        { label: '住宅区充电安全隐患', value: 84 },
+        { label: '餐饮集中区油烟异味', value: 72 },
+      ],
+      chaosAreas: [
+        { label: '石牌街道办', value: 96 },
+        { label: '北京街道办', value: 84 },
+        { label: '新港街道办', value: 78 },
+        { label: '同和街道办', value: 66 },
+        { label: '嘉禾街道办', value: 58 },
+      ],
+      trend: [84, 92, 106, 118, 126, 132],
+      tickets: [
+        { id: 'gw-ticket-1', title: `${activeUnit} 夜间施工噪声扰民事项集中上升`, status: '重点督办', time: '08:50', unit: activeUnit || '天河区城管局', process: '受理 → 派单 → 办理中', currentTime: '2026-06-01 14:20', content: '商圈周边夜间施工投诉量连续上升。', result: '已派发属地街道核查并启动联合处置。', handler: activeUnit || '天河区城管局' },
+        { id: 'gw-ticket-2', title: `${activeUnit} 校园周边占道经营反复出现`, status: '持续关注', time: '09:12', unit: activeUnit || '天河区城管局', process: '受理 → 签收 → 办理中', currentTime: '2026-06-01 14:20', content: '学校周边流动摊贩高峰时段聚集明显。', result: '城管执法队已安排错峰巡查。', handler: activeUnit || '天河区城管局' },
+        { id: 'gw-ticket-3', title: `${activeUnit} 沿街商铺油烟投诉多发`, status: '办理中', time: '10:05', unit: activeUnit || '天河区城管局', process: '受理 → 派单 → 核查', currentTime: '2026-06-01 14:20', content: '重点餐饮街区油烟扰民事项重复上报。', result: '生态环境分局与街道办联合复核中。', handler: activeUnit || '天河区城管局' },
+      ],
+    },
+    'warning-frequent-issue-count': {
+      layout: 'governance-warning-detail',
+      subtitle: '多发事项监测数量',
+      groupIssues: [
+        { label: '噪声扰民', value: 126 },
+        { label: '道路积水', value: 108 },
+        { label: '停车矛盾', value: 94 },
+        { label: '油烟异味', value: 82 },
+        { label: '消防隐患', value: 70 },
+      ],
+      frequentIssues: [
+        { label: '夜间施工噪声扰民', value: 138 },
+        { label: '老旧小区停车矛盾', value: 122 },
+        { label: '沿街商铺油烟投诉', value: 110 },
+        { label: '城中村环境卫生反复投诉', value: 91 },
+        { label: '高层住宅电梯故障', value: 76 },
+      ],
+      chaosAreas: [
+        { label: '员村街道办', value: 88 },
+        { label: '东山街道办', value: 79 },
+        { label: '江南中街道办', value: 70 },
+        { label: '南村镇街道办', value: 63 },
+        { label: '棠景街道办', value: 55 },
+      ],
+      trend: [72, 80, 95, 108, 118, 138],
+      tickets: [
+        { id: 'gw-ticket-4', title: `${activeUnit} 夜间施工噪声扰民事项高频出现`, status: '重点督办', time: '08:42', unit: activeUnit || '天河区城管局', process: '受理 → 派单 → 办理中', currentTime: '2026-06-01 14:20', content: '近一周夜间施工噪声类事项明显增多。', result: '已联动住建部门开展夜查。', handler: activeUnit || '天河区城管局' },
+        { id: 'gw-ticket-5', title: `${activeUnit} 老旧小区停车矛盾重复流转`, status: '持续关注', time: '09:18', unit: activeUnit || '天河区城管局', process: '受理 → 协同 → 办理中', currentTime: '2026-06-01 14:20', content: '停车矛盾事项重复派单、重复投诉。', result: '街道办正在组织专题协调。', handler: activeUnit || '天河区城管局' },
+        { id: 'gw-ticket-6', title: `${activeUnit} 沿街商铺油烟投诉频次升高`, status: '办理中', time: '10:08', unit: activeUnit || '天河区城管局', process: '受理 → 派单 → 核查', currentTime: '2026-06-01 14:20', content: '餐饮密集区油烟问题高频上报。', result: '相关商户正在复检整改。', handler: activeUnit || '天河区城管局' },
+      ],
+    },
+    'warning-chaos-area-count': {
+      layout: 'governance-warning-detail',
+      subtitle: '乱点区域监测数量',
+      groupIssues: [
+        { label: '商圈噪声扰民', value: 102 },
+        { label: '校园周边秩序', value: 96 },
+        { label: '餐饮油烟异味', value: 88 },
+        { label: '道路积水反复', value: 74 },
+        { label: '消防通道堵塞', value: 68 },
+      ],
+      frequentIssues: [
+        { label: '老旧小区停车矛盾', value: 112 },
+        { label: '商业综合体秩序问题', value: 98 },
+        { label: '沿街商铺油烟投诉', value: 90 },
+        { label: '住宅区充电安全隐患', value: 80 },
+        { label: '夜间施工噪声扰民', value: 72 },
+      ],
+      chaosAreas: [
+        { label: '珠江街道办', value: 86 },
+        { label: '洪桥街道办', value: 78 },
+        { label: '赤岗街道办', value: 69 },
+        { label: '大石街道办', value: 61 },
+        { label: '同和街道办', value: 53 },
+      ],
+      trend: [64, 70, 76, 82, 84, 86],
+      tickets: [
+        { id: 'gw-ticket-7', title: `${activeUnit} 商圈周边乱点区域持续活跃`, status: '重点督办', time: '08:36', unit: activeUnit || '天河区城管局', process: '受理 → 派单 → 办理中', currentTime: '2026-06-01 14:20', content: '重点商圈周边市容秩序问题重复出现。', result: '已组织城管和街道开展联动整治。', handler: activeUnit || '天河区城管局' },
+        { id: 'gw-ticket-8', title: `${activeUnit} 餐饮集中区乱点问题抬升`, status: '持续关注', time: '09:26', unit: activeUnit || '天河区城管局', process: '受理 → 协同 → 办理中', currentTime: '2026-06-01 14:20', content: '油烟、占道经营等问题在局部片区聚集。', result: '属地街道正在连续巡查。', handler: activeUnit || '天河区城管局' },
+        { id: 'gw-ticket-9', title: `${activeUnit} 社区周边停车乱点反复出现`, status: '办理中', time: '10:16', unit: activeUnit || '天河区城管局', process: '受理 → 派单 → 核查', currentTime: '2026-06-01 14:20', content: '部分老旧社区周边停车矛盾集中。', result: '已联合交警现场疏导。', handler: activeUnit || '天河区城管局' },
+      ],
+    },
+    'warning-order-count': {
+      layout: 'governance-warning-detail',
+      subtitle: '工单件数',
+      groupIssues: [
+        { label: '夜间施工噪声扰民', value: 146 },
+        { label: '道路积水重复上报', value: 132 },
+        { label: '老旧小区停车矛盾', value: 118 },
+        { label: '沿街商铺油烟投诉', value: 104 },
+        { label: '商业街消防通道堵塞', value: 92 },
+      ],
+      frequentIssues: [
+        { label: '校园周边占道经营', value: 138 },
+        { label: '住宅区充电安全隐患', value: 120 },
+        { label: '商业综合体秩序问题', value: 112 },
+        { label: '餐饮集中区油烟异味', value: 96 },
+        { label: '高层住宅电梯故障', value: 84 },
+      ],
+      chaosAreas: [
+        { label: '石牌街道办', value: 102 },
+        { label: '员村街道办', value: 93 },
+        { label: '东山街道办', value: 82 },
+        { label: '赤岗街道办', value: 74 },
+        { label: '大石街道办', value: 66 },
+      ],
+      trend: [96, 108, 118, 126, 138, 146],
+      tickets: [
+        { id: 'gw-ticket-10', title: `${activeUnit} 总体工单量持续走高`, status: '重点督办', time: '08:28', unit: activeUnit || '天河区城管局', process: '受理 → 派单 → 办理中', currentTime: '2026-06-01 14:20', content: '治理要点相关工单总量连续上涨。', result: '已纳入专项监测清单。', handler: activeUnit || '天河区城管局' },
+        { id: 'gw-ticket-11', title: `${activeUnit} 热点事项带动工单件数增加`, status: '持续关注', time: '09:14', unit: activeUnit || '天河区城管局', process: '受理 → 签收 → 办理中', currentTime: '2026-06-01 14:20', content: '多类热点事项并发导致工单量增加。', result: '已组织专班跟踪处置。', handler: activeUnit || '天河区城管局' },
+        { id: 'gw-ticket-12', title: `${activeUnit} 区域乱点事项转化为批量工单`, status: '办理中', time: '10:02', unit: activeUnit || '天河区城管局', process: '受理 → 协同 → 核查', currentTime: '2026-06-01 14:20', content: '局部区域乱点问题转化为批量上报工单。', result: '已安排属地部门联动核查。', handler: activeUnit || '天河区城管局' },
+      ],
+    },
+    'warning-change-rate': {
+      layout: 'warning-detail',
+      subtitle: '变化率异常',
+      hotspotTop5: [
+        { label: '夜间施工噪声扰民', value: 132, color: '#ff6b6b' },
+        { label: '校园周边占道经营', value: 118, color: '#ff8f6b' },
+        { label: '沿街商铺油烟投诉', value: 104, color: '#ffb561' },
+        { label: '商业街消防通道堵塞', value: 92, color: '#ff7f96' },
+        { label: '学校周边交通秩序整治', value: 86, color: '#ff9f43' },
+      ],
+      streetTop5: [
+        { label: '石牌街道办', value: 96, color: '#ff6b6b' },
+        { label: '北京街道办', value: 84, color: '#ff8f6b' },
+        { label: '新港街道办', value: 78, color: '#ffb561' },
+        { label: '同和街道办', value: 66, color: '#ff7f96' },
+        { label: '嘉禾街道办', value: 58, color: '#ff9f43' },
+      ],
+      units: [
+        { label: '城管执法队', volume: 126, rate: 32 },
+        { label: '住建局', volume: 114, rate: 28 },
+        { label: '生态环境分局', volume: 103, rate: 24 },
+        { label: '消防救援站', volume: 88, rate: 21 },
+        { label: '交警支队', volume: 76, rate: 18 },
+      ],
+    },
+    'warning-in-transit': {
+      layout: 'warning-detail',
+      subtitle: '在途工单异常',
+      hotspotTop5: [
+        { label: '道路积水重复上报', value: 128, color: '#ff6b6b' },
+        { label: '老旧小区停车矛盾', value: 116, color: '#ff8f6b' },
+        { label: '商业综合体秩序问题', value: 98, color: '#ffb561' },
+        { label: '住宅区充电安全隐患', value: 84, color: '#ff7f96' },
+        { label: '餐饮集中区油烟异味', value: 72, color: '#ff9f43' },
+      ],
+      streetTop5: [
+        { label: '员村街道办', value: 88, color: '#ff6b6b' },
+        { label: '东山街道办', value: 79, color: '#ff8f6b' },
+        { label: '江南中街道办', value: 70, color: '#ffb561' },
+        { label: '南村镇街道办', value: 63, color: '#ff7f96' },
+        { label: '棠景街道办', value: 55, color: '#ff9f43' },
+      ],
+      units: [
+        { label: '天河区政务服务中心', volume: 138, rate: 26 },
+        { label: '越秀区城运中心', volume: 124, rate: 22 },
+        { label: '海珠区综合治理办', volume: 112, rate: 19 },
+        { label: '番禺区街面治理专班', volume: 96, rate: 17 },
+        { label: '白云区热线联动中心', volume: 82, rate: 15 },
+      ],
+    },
+    'warning-avg-duration': {
+      layout: 'warning-detail',
+      subtitle: '平均时长异常',
+      hotspotTop5: [
+        { label: '高层住宅电梯故障', value: 122, color: '#ff6b6b' },
+        { label: '商业街消防通道堵塞', value: 110, color: '#ff8f6b' },
+        { label: '老旧社区照明故障投诉', value: 96, color: '#ffb561' },
+        { label: '城中村环境卫生反复投诉', value: 82, color: '#ff7f96' },
+        { label: '夜间施工噪声扰民', value: 74, color: '#ff9f43' },
+      ],
+      streetTop5: [
+        { label: '珠江街道办', value: 86, color: '#ff6b6b' },
+        { label: '洪桥街道办', value: 78, color: '#ff8f6b' },
+        { label: '赤岗街道办', value: 69, color: '#ffb561' },
+        { label: '大石街道办', value: 61, color: '#ff7f96' },
+        { label: '同和街道办', value: 53, color: '#ff9f43' },
+      ],
+      units: [
+        { label: '住建局', volume: 118, rate: 21 },
+        { label: '消防救援站', volume: 106, rate: 19 },
+        { label: '照明管理所', volume: 90, rate: 17 },
+        { label: '城管执法队', volume: 84, rate: 14 },
+        { label: '街道办', volume: 72, rate: 12 },
+      ],
+    },
+    performance: {
+      layout: 'performance-detail',
+      subtitle: activeUnit || '承办绩效分析',
+      kpis: [
+        { label: '预逾期工单量', value: 18, unit: '件', key: 'pre-overdue' },
+        { label: '超期工单量', value: 7, unit: '件', key: 'overdue' },
+        { label: '紧急工单量', value: 12, unit: '件', key: 'urgent' },
+        { label: '即将逾期剩余时间', value: 3.5, unit: '小时', key: 'expiring-soon' },
+      ],
+      scoreTrend: [92.4, 93.1, 94.6, 95.2, 95.8, 96.8],
+      scoreItems: [
+        { label: '签收及时率', value: 96, belowAvg: false },
+        { label: '办结及时率', value: 94, belowAvg: false },
+        { label: '回访满意率', value: 91, belowAvg: true },
+        { label: '退单控制', value: 89, belowAvg: true },
+        { label: '协同联办', value: 93, belowAvg: false },
+      ],
+    },
+  }[metric] ?? {
+    layout: 'summary',
+    subtitle: '诉求工单分析',
+    regions: [],
+    top10: [],
+  };
+
+  if (!activeUnit) return config;
+
+  return {
+    ...config,
+    subtitle: config.layout === 'performance-detail' ? config.subtitle : `${activeUnit} · ${config.subtitle}`,
+  };
+}
+
+function renderSpecialAnalysisOrdersPanel() {
+  const panel = document.querySelector('[data-special-analysis-orders-panel]');
+  if (!panel) return;
+  panel.dataset.specialAnalysisOrdersState = SPECIAL_ANALYSIS_ORDERS_STATE.isOpen ? 'open' : 'closed';
+  if (!SPECIAL_ANALYSIS_ORDERS_STATE.isOpen) return;
+
+  const config = getSpecialAnalysisOrdersPanelConfig();
+  panel.dataset.specialAnalysisOrdersLayout = config.layout ?? 'default';
+  const title = panel.querySelector('[data-special-analysis-orders-title]');
+  const subtitle = panel.querySelector('[data-special-analysis-orders-subtitle]');
+  const content = panel.querySelector('[data-special-analysis-orders-panel-content]');
+
+  if (title) {
+    title.textContent = config.layout === 'performance-detail'
+      ? '承办绩效分析'
+      : config.layout === 'governance-warning-detail'
+        ? '治理要点预警分析'
+        : config.layout === 'kpi-unit-ranking'
+          ? '单位排名'
+          : '诉求工单分析';
+  }
+  if (subtitle) subtitle.textContent = config.subtitle;
+  if (!content) return;
+
+  if (config.layout === 'in-transit') {
+    renderSpecialAnalysisInTransitPanel(content, config);
+    return;
+  }
+
+  if (config.layout === 'warning-detail') {
+    renderSpecialAnalysisWarningDetailPanel(content, config);
+    return;
+  }
+
+  if (config.layout === 'governance-warning-detail') {
+    renderSpecialAnalysisGovernanceWarningDetailPanel(content, config);
+    return;
+  }
+
+  if (config.layout === 'kpi-unit-ranking') {
+    renderSpecialAnalysisKpiUnitRankingPanel(content, config);
+    return;
+  }
+
+  if (config.layout === 'performance-detail') {
+    renderSpecialAnalysisPerformanceDetailPanel(content, config);
+    return;
+  }
+
+  if (config.layout === 'orders-more') {
+    renderSpecialAnalysisOrdersMorePanel(content, config);
+    return;
+  }
+
+  if (config.layout === 'unit-dispatch') {
+    renderSpecialAnalysisUnitDispatchPanel(content, config);
+    return;
+  }
+
+  content.innerHTML = `
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">区域分布排名</span>
+        <span class="map-orders-card__meta">横向条状图</span>
+      </div>
+      <div class="map-orders-card__content" data-special-analysis-orders-region-rank></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">工单量排名 Top10 区域</span>
+        <span class="map-orders-card__meta">柱状图</span>
+      </div>
+      <div class="map-orders-card__content province-chart province-chart--bars" data-special-analysis-orders-top10-chart></div>
+    </section>
+  `;
+
+  const regionRank = content.querySelector('[data-special-analysis-orders-region-rank]');
+  const top10Chart = content.querySelector('[data-special-analysis-orders-top10-chart]');
+  if (regionRank) renderSpecialAnalysisOrdersRegionRankChart(regionRank, config.regions);
+  if (top10Chart) renderSpecialAnalysisOrdersTop10Chart(top10Chart, config.top10);
+}
+
+function renderSpecialAnalysisOrdersRegionRankChart(container, items) {
+  if (!container) return;
+  const max = Math.max(...items.map((item) => item.value), 1);
+  const suffix = SPECIAL_ANALYSIS_ORDERS_STATE.metric === 'avg-duration' ? '小时' : SPECIAL_ANALYSIS_ORDERS_STATE.metric === 'change-rate' ? '%' : '件';
+  container.innerHTML = `
+    <div class="map-orders-rank special-analysis-orders-panel__rank-list">
+      ${items
+        .map(
+          (item, index) => `
+            <article class="map-orders-rank__item special-analysis-orders-panel__rank-item">
+              <span class="map-orders-rank__index">${String(index + 1).padStart(2, '0')}</span>
+              <div class="map-orders-rank__main">
+                <div class="map-orders-rank__head">
+                  <span class="map-orders-rank__label">${item.label}</span>
+                  <span class="map-orders-rank__value">${item.value}${suffix}</span>
+                </div>
+                <div class="map-orders-rank__track">
+                  <span class="map-orders-rank__bar" style="width:${(item.value / max) * 100}%"></span>
+                </div>
+              </div>
+            </article>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderSpecialAnalysisOrdersTop10Chart(container, items) {
+  if (!container) return;
+  const width = container.clientWidth || 420;
+  const height = container.clientHeight || 240;
+  const baselineY = height - 28;
+  const chartHeight = height - 48;
+  const max = Math.max(...items.map((item) => item.value), 1);
+  const slotWidth = width / Math.max(items.length, 1);
+  const barWidth = Math.min(24, slotWidth * 0.52);
+  const bars = items
+    .map((item, index) => {
+      const x = slotWidth * index + (slotWidth - barWidth) / 2;
+      const barHeight = (item.value / max) * chartHeight;
+      const y = baselineY - barHeight;
+      return `
+        <g>
+          <rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${barWidth.toFixed(2)}" height="${barHeight.toFixed(2)}" rx="4" fill="${item.color ?? '#57b8ff'}"></rect>
+          <text x="${(x + barWidth / 2).toFixed(2)}" y="${(y - 8).toFixed(2)}" fill="rgba(220,245,255,0.88)" font-size="10" text-anchor="middle">${item.value}</text>
+          <text x="${(x + barWidth / 2).toFixed(2)}" y="${(height - 8).toFixed(2)}" fill="rgba(152,188,208,0.72)" font-size="10" text-anchor="middle">${item.label}</text>
+        </g>
+      `;
+    })
+    .join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <line x1="0" x2="${width}" y1="${baselineY}" y2="${baselineY}" stroke="var(--dt-chart-line-dim)" stroke-width="1"></line>
+      ${bars}
+    </svg>
+  `;
+}
+
+function renderSpecialAnalysisInTransitPanel(container, config) {
+  const depts = config.depts ?? [];
+  const activeDept = depts.find((item) => item.name === SPECIAL_ANALYSIS_ORDERS_STATE.activeDept) ?? depts[0] ?? null;
+  if (!SPECIAL_ANALYSIS_ORDERS_STATE.activeDept && activeDept) {
+    SPECIAL_ANALYSIS_ORDERS_STATE.activeDept = activeDept.name;
+  }
+
+  container.innerHTML = `
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">办理部门排名</span>
+        <span class="map-orders-card__meta">点击联动</span>
+      </div>
+      <div class="map-orders-card__content special-analysis-orders-panel__dept-list" data-special-analysis-orders-dept-list></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">在途工单量趋势</span>
+        <span class="map-orders-card__meta">折线图</span>
+      </div>
+      <div class="map-orders-card__content special-analysis-orders-panel__trend-chart" data-special-analysis-orders-trend-chart></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">预警工单列表</span>
+        <span class="map-orders-card__meta">流式卡片</span>
+      </div>
+      <div class="map-orders-card__content special-analysis-orders-panel__warning-list" data-special-analysis-orders-warning-list></div>
+    </section>
+  `;
+
+  const deptList = container.querySelector('[data-special-analysis-orders-dept-list]');
+  const trendChart = container.querySelector('[data-special-analysis-orders-trend-chart]');
+  const warningList = container.querySelector('[data-special-analysis-orders-warning-list]');
+
+  if (deptList) {
+    deptList.innerHTML = depts
+      .map(
+        (dept, index) => `
+          <button class="special-analysis-orders-panel__dept-item${dept.name === SPECIAL_ANALYSIS_ORDERS_STATE.activeDept ? ' special-analysis-orders-panel__dept-item--active' : ''}" type="button" data-special-analysis-orders-dept="${dept.name}">
+            <span class="special-analysis-orders-panel__dept-rank">${String(index + 1).padStart(2, '0')}</span>
+            <span class="special-analysis-orders-panel__dept-name">${dept.name}</span>
+            <span class="special-analysis-orders-panel__dept-count">${dept.count}</span>
+          </button>
+        `
+      )
+      .join('');
+  }
+
+  if (activeDept && trendChart) {
+    renderSpecialAnalysisOrdersTrendChart(trendChart, activeDept.trend);
+  }
+
+  if (activeDept && warningList) {
+    warningList.innerHTML = activeDept.warnings
+      .map(
+        (warning, index) => `
+          <article class="special-analysis-orders-panel__warning-item">
+            <span class="special-analysis-orders-panel__warning-flag">预警 ${String(index + 1).padStart(2, '0')}</span>
+            <span class="special-analysis-orders-panel__warning-text">${warning}</span>
+          </article>
+        `
+      )
+      .join('');
+  }
+}
+
+function renderSpecialAnalysisOrdersTrendChart(container, values) {
+  const months = ['01', '02', '03', '04', '05', '06'];
+  const width = container.clientWidth || 320;
+  const height = 180;
+  const baselineY = height - 24;
+  const chartHeight = height - 42;
+  const max = Math.max(...values, 1);
+  const slotWidth = width / Math.max(values.length - 1, 1);
+  const points = values.map((value, index) => ({
+    x: slotWidth * index,
+    y: baselineY - (value / max) * chartHeight,
+    value,
+  }));
+  const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
+  const dots = points.map((point) => `<circle cx="${point.x.toFixed(2)}" cy="${point.y.toFixed(2)}" r="3" fill="#4de0d4"></circle>`).join('');
+  const labels = points.map((point, index) => `<text x="${point.x.toFixed(2)}" y="${height - 6}" fill="rgba(152,188,208,0.72)" font-size="10" text-anchor="middle">${months[index]}</text>`).join('');
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <line x1="0" x2="${width}" y1="${baselineY}" y2="${baselineY}" stroke="var(--dt-chart-line-dim)" stroke-width="1"></line>
+      <path d="${path}" fill="none" stroke="#4de0d4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+      ${dots}
+      ${labels}
+    </svg>
+  `;
+}
+
+function renderSpecialAnalysisOrdersTypeChart(container, items) {
+  if (!container) return;
+  const total = items.reduce((sum, item) => sum + item.value, 0) || 1;
+  const cx = 104;
+  const cy = 90;
+  const radius = 62;
+  let startAngle = -Math.PI / 2;
+
+  const slices = items.map((item, index) => {
+    const angle = (item.value / total) * Math.PI * 2;
+    const endAngle = startAngle + angle;
+    const x1 = cx + radius * Math.cos(startAngle);
+    const y1 = cy + radius * Math.sin(startAngle);
+    const x2 = cx + radius * Math.cos(endAngle);
+    const y2 = cy + radius * Math.sin(endAngle);
+    const largeArc = angle > Math.PI ? 1 : 0;
+    const color = ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#73d5ff'][index % 5];
+    const path = `M ${cx} ${cy} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${radius} ${radius} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+    startAngle = endAngle;
+    return { path, color, item };
+  });
+
+  const legend = slices.map(({ color, item }, index) => {
+    const percent = ((item.value / total) * 100).toFixed(1);
+    return `
+      <div class="special-analysis-orders-panel__type-legend-item">
+        <span class="special-analysis-orders-panel__type-legend-main">
+          <span class="special-analysis-orders-panel__type-legend-dot" style="background:${color}"></span>
+          <span class="special-analysis-orders-panel__type-legend-label">${item.label}</span>
+        </span>
+        <span class="special-analysis-orders-panel__type-legend-value">${item.value} / ${percent}%</span>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <div class="special-analysis-orders-panel__type-layout">
+      <svg viewBox="0 0 220 180" class="special-analysis-orders-panel__type-svg" aria-hidden="true">
+        ${slices.map(({ path, color }) => `<path d="${path}" fill="${color}"></path>`).join('')}
+        <circle cx="${cx}" cy="${cy}" r="28" fill="rgba(8,20,36,0.95)"></circle>
+        <text x="${cx}" y="${cy + 4}" fill="var(--dt-text-emphasis)" font-size="12" font-weight="600" text-anchor="middle">类型</text>
+      </svg>
+      <div class="special-analysis-orders-panel__type-legend">${legend}</div>
+    </div>
+  `;
+}
+
+function renderSpecialAnalysisWarningDetailPanel(container, config) {
+  container.innerHTML = `
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">工单量变化具体热点 Top5</span>
+        <span class="map-orders-card__meta">柱状图</span>
+      </div>
+      <div class="map-orders-card__content province-chart province-chart--bars" data-special-analysis-warning-hotspot-chart></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">街办 Top5</span>
+        <span class="map-orders-card__meta">柱状图</span>
+      </div>
+      <div class="map-orders-card__content province-chart province-chart--bars" data-special-analysis-warning-street-chart></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">承办单位 Top5 工单量和变化率</span>
+        <span class="map-orders-card__meta">双柱状图</span>
+      </div>
+      <div class="map-orders-card__content special-analysis-orders-panel__dual-chart" data-special-analysis-warning-unit-chart></div>
+    </section>
+  `;
+
+  const hotspotChart = container.querySelector('[data-special-analysis-warning-hotspot-chart]');
+  const streetChart = container.querySelector('[data-special-analysis-warning-street-chart]');
+  const unitChart = container.querySelector('[data-special-analysis-warning-unit-chart]');
+
+  if (hotspotChart) renderSpecialAnalysisOrdersTop10Chart(hotspotChart, config.hotspotTop5 ?? []);
+  if (streetChart) renderSpecialAnalysisOrdersTop10Chart(streetChart, config.streetTop5 ?? []);
+  if (unitChart) renderSpecialAnalysisWarningUnitChart(unitChart, config.units ?? []);
+}
+
+function renderSpecialAnalysisWarningUnitChart(container, items) {
+  if (!container) return;
+  const width = container.clientWidth || 320;
+  const height = 220;
+  const baselineY = height - 30;
+  const chartHeight = height - 54;
+  const maxVolume = Math.max(...items.map((item) => item.volume), 1);
+  const maxRate = Math.max(...items.map((item) => item.rate), 1);
+  const slotWidth = width / Math.max(items.length, 1);
+  const barWidth = Math.min(16, slotWidth * 0.24);
+
+  const groups = items
+    .map((item, index) => {
+      const groupX = slotWidth * index + slotWidth / 2;
+      const volumeHeight = (item.volume / maxVolume) * chartHeight;
+      const rateHeight = (item.rate / maxRate) * chartHeight;
+      const volumeX = groupX - barWidth - 3;
+      const rateX = groupX + 3;
+      return `
+        <g>
+          <rect x="${volumeX.toFixed(2)}" y="${(baselineY - volumeHeight).toFixed(2)}" width="${barWidth.toFixed(2)}" height="${volumeHeight.toFixed(2)}" rx="3" fill="#ff6b6b"></rect>
+          <rect x="${rateX.toFixed(2)}" y="${(baselineY - rateHeight).toFixed(2)}" width="${barWidth.toFixed(2)}" height="${rateHeight.toFixed(2)}" rx="3" fill="#ffb561"></rect>
+          <text x="${groupX.toFixed(2)}" y="${(height - 8).toFixed(2)}" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">${item.label}</text>
+        </g>
+      `;
+    })
+    .join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <line x1="0" x2="${width}" y1="${baselineY}" y2="${baselineY}" stroke="var(--dt-chart-line-dim)" stroke-width="1"></line>
+      ${groups}
+    </svg>
+    <div class="special-analysis-orders-panel__dual-legend">
+      <span class="special-analysis-orders-panel__legend-item"><span class="special-analysis-orders-panel__legend-dot special-analysis-orders-panel__legend-dot--volume"></span>工单量</span>
+      <span class="special-analysis-orders-panel__legend-item"><span class="special-analysis-orders-panel__legend-dot special-analysis-orders-panel__legend-dot--rate"></span>变化率</span>
+    </div>
+  `;
+}
+
+function renderSpecialAnalysisSimpleBarChart(container, items, suffix = '件') {
+  if (!container) return;
+  const max = Math.max(...items.map((item) => item.value), 1);
+  container.innerHTML = `
+    <div class="map-orders-rank special-analysis-orders-panel__rank-list">
+      ${items
+        .map(
+          (item, index) => `
+            <article class="map-orders-rank__item special-analysis-orders-panel__rank-item">
+              <span class="map-orders-rank__index">${String(index + 1).padStart(2, '0')}</span>
+              <div class="map-orders-rank__main">
+                <div class="map-orders-rank__head">
+                  <span class="map-orders-rank__label">${item.label}</span>
+                  <span class="map-orders-rank__value">${item.value}${suffix}</span>
+                </div>
+                <div class="map-orders-rank__track">
+                  <span class="map-orders-rank__bar" style="width:${(item.value / max) * 100}%"></span>
+                </div>
+              </div>
+            </article>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderSpecialAnalysisGovernanceWarningTicketList(container, items) {
+  if (!container) return;
+  container.innerHTML = `
+    <div class="special-analysis-orders-panel__governance-ticket-list">
+      ${items
+        .map(
+          (item) => `
+            <article class="special-analysis-orders-panel__governance-ticket-item">
+              <div class="special-analysis-orders-panel__governance-ticket-main">
+                <div class="special-analysis-orders-panel__governance-ticket-title">${item.title}</div>
+                <div class="special-analysis-orders-panel__governance-ticket-meta"><span>承办单位：${item.unit}</span><span>${item.time}</span></div>
+                <div class="special-analysis-orders-panel__governance-ticket-time"><span>${item.process}</span></div>
+              </div>
+              <div class="special-analysis-orders-panel__governance-ticket-side"><span class="map-workbench__status map-workbench__status--${item.status.includes('重点') ? 'alert' : item.status.includes('持续') ? 'pending' : 'active'}">${item.status}</span></div>
+            </article>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderSpecialAnalysisGovernanceWarningDetailPanel(container, config) {
+  container.innerHTML = `
+    <div class="special-analysis-orders-panel__governance-grid">
+      <section class="map-orders-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">群发事项</span>
+          <span class="map-orders-card__meta">横向条状图</span>
+        </div>
+        <div class="map-orders-card__content" data-special-analysis-governance-group-chart></div>
+      </section>
+      <section class="map-orders-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">多发事项</span>
+          <span class="map-orders-card__meta">横向条状图</span>
+        </div>
+        <div class="map-orders-card__content" data-special-analysis-governance-frequent-chart></div>
+      </section>
+      <section class="map-orders-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">区域乱点事项</span>
+          <span class="map-orders-card__meta">横向条状图</span>
+        </div>
+        <div class="map-orders-card__content" data-special-analysis-governance-chaos-chart></div>
+      </section>
+      <section class="map-orders-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">事项演化趋势</span>
+          <span class="map-orders-card__meta">折线图</span>
+        </div>
+        <div class="map-orders-card__content special-analysis-orders-panel__trend-chart" data-special-analysis-governance-trend-chart></div>
+      </section>
+      <section class="map-orders-card special-analysis-orders-panel__governance-list-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">工单列表</span>
+          <span class="map-orders-card__meta">列表</span>
+        </div>
+        <div class="map-orders-card__content special-analysis-orders-panel__governance-list" data-special-analysis-governance-ticket-list></div>
+      </section>
+    </div>
+  `;
+
+  renderSpecialAnalysisSimpleBarChart(container.querySelector('[data-special-analysis-governance-group-chart]'), config.groupIssues ?? []);
+  renderSpecialAnalysisSimpleBarChart(container.querySelector('[data-special-analysis-governance-frequent-chart]'), config.frequentIssues ?? []);
+  renderSpecialAnalysisSimpleBarChart(container.querySelector('[data-special-analysis-governance-chaos-chart]'), config.chaosAreas ?? []);
+  renderSpecialAnalysisOrdersTrendChart(container.querySelector('[data-special-analysis-governance-trend-chart]'), config.trend ?? []);
+  renderSpecialAnalysisGovernanceWarningTicketList(container.querySelector('[data-special-analysis-governance-ticket-list]'), config.tickets ?? []);
+}
+
+function getSpecialAnalysisTicketConfig() {
+  return {
+    'pre-overdue': {
+      title: '预逾期工单量',
+      items: [
+        { id: 'sa-ticket-1', title: '天河区夜间施工噪声工单即将逾期', status: '预逾期', time: '剩余 3小时', unit: '天河区政务服务中心', process: '受理 → 派单 → 办理中', currentTime: '2026-06-01 14:20', content: '群众反映夜间施工噪声持续扰民，要求立即处置。', result: '已派发属地街道核查，待反馈处置结果。', handler: '天河区政务服务中心' },
+        { id: 'sa-ticket-2', title: '越秀区油烟扰民工单临近超时', status: '预逾期', time: '剩余 2小时', unit: '越秀区城运中心', process: '受理 → 派单 → 部门签收', currentTime: '2026-06-01 14:20', content: '群众投诉沿街商铺油烟扰民，影响正常生活。', result: '生态环境分局已签收，现场核查中。', handler: '越秀区城运中心' }
+      ],
+    },
+    overdue: {
+      title: '超期工单量',
+      items: [
+        { id: 'sa-ticket-3', title: '海珠区道路积水工单已超期', status: '超期', time: '超期 5小时', unit: '海珠区综合治理办', process: '受理 → 派单 → 办理中 → 超期', currentTime: '2026-06-01 14:20', content: '道路积水影响车辆通行，要求尽快处理。', result: '区防汛办现场抽排中，待处置完成。', handler: '海珠区综合治理办' },
+        { id: 'sa-ticket-4', title: '番禺区消防通道堵塞工单超期未办结', status: '超期', time: '超期 3小时', unit: '番禺区街面治理专班', process: '受理 → 派单 → 催办 → 超期', currentTime: '2026-06-01 14:20', content: '商业街消防通道被占用，存在安全隐患。', result: '现场已清障，等待办结回传。', handler: '番禺区街面治理专班' }
+      ],
+    },
+    urgent: {
+      title: '紧急工单量',
+      items: [
+        { id: 'sa-ticket-5', title: '白云区紧急充电安全隐患工单', status: '紧急', time: '紧急处置', unit: '白云区热线联动中心', process: '受理 → 派单 → 应急处置', currentTime: '2026-06-01 14:20', content: '住宅区充电线路冒烟，存在火灾风险。', result: '消防救援站已到场处置。', handler: '白云区热线联动中心' },
+        { id: 'sa-ticket-6', title: '天河区电梯困人工单', status: '紧急', time: '紧急处置', unit: '天河区政务服务中心', process: '受理 → 派单 → 联动救援', currentTime: '2026-06-01 14:20', content: '高层住宅电梯故障有人被困，需立即救援。', result: '应急联动中心和维保单位已赶赴现场。', handler: '天河区政务服务中心' }
+      ],
+    },
+    'expiring-soon': {
+      title: '即将逾期剩余时间',
+      items: [
+        { id: 'sa-ticket-7', title: '越秀区占道经营工单 3.5 小时后逾期', status: '即将逾期', time: '剩余 3.5小时', unit: '越秀区城运中心', process: '受理 → 派单 → 办理中', currentTime: '2026-06-01 14:20', content: '学校周边占道经营影响通行秩序。', result: '城管执法队准备现场整治。', handler: '越秀区城运中心' },
+        { id: 'sa-ticket-8', title: '海珠区停车矛盾工单 2 小时后逾期', status: '即将逾期', time: '剩余 2小时', unit: '海珠区综合治理办', process: '受理 → 派单 → 部门签收', currentTime: '2026-06-01 14:20', content: '老旧小区停车矛盾引发重复投诉。', result: '街道办已签收，待协调反馈。', handler: '海珠区综合治理办' }
+      ],
+    },
+  }[SPECIAL_ANALYSIS_TICKET_STATE.category] ?? { title: '工单列表', items: [] };
+}
+
+function renderSpecialAnalysisTicketPanel() {
+  const panel = document.querySelector('[data-special-analysis-ticket-panel]');
+  if (!panel) return;
+  panel.dataset.specialAnalysisTicketState = SPECIAL_ANALYSIS_TICKET_STATE.isOpen ? 'open' : 'closed';
+  if (!SPECIAL_ANALYSIS_TICKET_STATE.isOpen) return;
+
+  const config = getSpecialAnalysisTicketConfig();
+  const title = panel.querySelector('[data-special-analysis-ticket-title]');
+  const list = panel.querySelector('[data-special-analysis-ticket-list]');
+  if (title) title.textContent = config.title;
+  if (list) {
+    list.innerHTML = config.items.map((item, index) => `
+      <article class="map-workbench__item" data-special-analysis-ticket-item="${item.id}" role="button" tabindex="0" aria-label="打开${item.title}工单详情">
+        <div class="map-workbench__item-icon"><span class="map-workbench__item-icon-core">${String(index + 1).padStart(2, '0')}</span></div>
+        <div class="map-workbench__item-main">
+          <div class="map-workbench__item-title">${item.title}</div>
+          <div class="map-workbench__item-meta"><span>承办单位：${item.unit}</span><span>${item.time}</span></div>
+          <div class="map-workbench__item-time"><span>${item.process}</span></div>
+        </div>
+        <div class="map-workbench__item-side"><span class="map-workbench__status map-workbench__status--${item.status.includes('超期') ? 'alert' : item.status.includes('紧急') ? 'pending' : 'active'}">${item.status}</span></div>
+      </article>
+    `).join('');
+  }
+}
+
+function openSpecialAnalysisTicketPanel(category) {
+  SPECIAL_ANALYSIS_TICKET_STATE.isOpen = true;
+  SPECIAL_ANALYSIS_TICKET_STATE.category = category;
+  renderSpecialAnalysisTicketPanel();
+}
+
+function closeSpecialAnalysisTicketPanel() {
+  SPECIAL_ANALYSIS_TICKET_STATE.isOpen = false;
+  renderSpecialAnalysisTicketPanel();
+}
+
+function getSpecialAnalysisTicketDetailItem() {
+  const config = getSpecialAnalysisTicketConfig();
+  return config.items.find((item) => item.id === SPECIAL_ANALYSIS_TICKET_DETAIL_STATE.itemId) ?? null;
+}
+
+function renderSpecialAnalysisTicketDetailPanel() {
+  const panel = document.querySelector('[data-special-analysis-ticket-detail-panel]');
+  if (!panel) return;
+  panel.dataset.specialAnalysisTicketDetailState = SPECIAL_ANALYSIS_TICKET_DETAIL_STATE.isOpen ? 'open' : 'closed';
+  if (!SPECIAL_ANALYSIS_TICKET_DETAIL_STATE.isOpen) return;
+
+  const item = getSpecialAnalysisTicketDetailItem();
+  if (!item) return;
+  const title = panel.querySelector('[data-special-analysis-ticket-detail-title]');
+  const grid = panel.querySelector('[data-special-analysis-ticket-detail-grid]');
+  if (title) title.textContent = item.title;
+  if (grid) {
+    grid.innerHTML = [
+      ['所有流程状态', item.process],
+      ['承办单位', item.handler],
+      ['当前时间', item.currentTime],
+      ['诉求内容', item.content],
+      ['办理结果', item.result],
+      ['工单状态', item.status],
+    ].map(([label, value]) => `
+      <div class="map-detail-workbench__field${label === '诉求内容' || label === '办理结果' ? ' map-detail-workbench__field--full' : ''}">
+        <span class="map-detail-workbench__field-label">${label}</span>
+        <span class="map-detail-workbench__field-value">${value}</span>
+      </div>
+    `).join('');
+  }
+}
+
+function openSpecialAnalysisTicketDetailPanel(itemId) {
+  SPECIAL_ANALYSIS_TICKET_DETAIL_STATE.isOpen = true;
+  SPECIAL_ANALYSIS_TICKET_DETAIL_STATE.itemId = itemId;
+  renderSpecialAnalysisTicketDetailPanel();
+}
+
+function closeSpecialAnalysisTicketDetailPanel() {
+  SPECIAL_ANALYSIS_TICKET_DETAIL_STATE.isOpen = false;
+  renderSpecialAnalysisTicketDetailPanel();
+}
+
+function renderSpecialAnalysisPerformanceDetailPanel(container, config) {
+  container.innerHTML = `
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">特殊工单监管</span>
+        <span class="map-orders-card__meta">两行两列</span>
+      </div>
+      <div class="map-orders-card__content special-analysis-orders-panel__performance-kpis" data-special-analysis-performance-kpis></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">单位分值变化趋势</span>
+        <span class="map-orders-card__meta">折线图</span>
+      </div>
+      <div class="map-orders-card__content special-analysis-orders-panel__trend-chart" data-special-analysis-performance-trend></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">子项指标得分情况</span>
+        <span class="map-orders-card__meta">低于平均分标红</span>
+      </div>
+      <div class="map-orders-card__content special-analysis-orders-panel__performance-score" data-special-analysis-performance-score></div>
+    </section>
+  `;
+
+  const kpis = container.querySelector('[data-special-analysis-performance-kpis]');
+  const trend = container.querySelector('[data-special-analysis-performance-trend]');
+  const score = container.querySelector('[data-special-analysis-performance-score]');
+
+  if (kpis) {
+    kpis.innerHTML = (config.kpis ?? [])
+      .map(
+        (item) => `
+          <button class="special-analysis-orders-panel__performance-kpi" type="button" data-special-analysis-ticket-trigger="${item.key}">
+            <span class="special-analysis-orders-panel__performance-kpi-label">${item.label}</span>
+            <div class="special-analysis-orders-panel__performance-kpi-value-row">
+              <span class="special-analysis-orders-panel__performance-kpi-value">${item.value}</span>
+              <span class="special-analysis-orders-panel__performance-kpi-unit">${item.unit}</span>
+            </div>
+          </button>
+        `
+      )
+      .join('');
+  }
+
+  if (trend) {
+    renderSpecialAnalysisPerformanceTrendChart(trend, config.scoreTrend ?? []);
+  }
+
+  if (score) {
+    renderSpecialAnalysisPerformanceScoreChart(score, config.scoreItems ?? []);
+  }
+}
+
+function renderSpecialAnalysisOrdersMorePanel(container, config) {
+  container.innerHTML = `
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">承办量排名 Top5 单位</span>
+        <span class="map-orders-card__meta">横向条状图</span>
+      </div>
+      <div class="map-orders-card__content" data-special-analysis-orders-more-undertaking></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">办理量排名 Top5 单位</span>
+        <span class="map-orders-card__meta">横向条状图</span>
+      </div>
+      <div class="map-orders-card__content" data-special-analysis-orders-more-handling></div>
+    </section>
+  `;
+
+  const undertaking = container.querySelector('[data-special-analysis-orders-more-undertaking]');
+  const handling = container.querySelector('[data-special-analysis-orders-more-handling]');
+  if (undertaking) renderSpecialAnalysisOrdersMetaRankChart(undertaking, config.undertakingTop5 ?? []);
+  if (handling) renderSpecialAnalysisOrdersMetaRankChart(handling, config.handlingTop5 ?? []);
+}
+
+function renderSpecialAnalysisKpiUnitRankingPanel(container, config) {
+  container.innerHTML = `
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">前五名单位</span>
+        <span class="map-orders-card__meta">Top5</span>
+      </div>
+      <div class="map-orders-card__content" data-special-analysis-kpi-ranking-top></div>
+    </section>
+    <section class="map-orders-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">后五名单位</span>
+        <span class="map-orders-card__meta">Bottom5</span>
+      </div>
+      <div class="map-orders-card__content" data-special-analysis-kpi-ranking-bottom></div>
+    </section>
+  `;
+
+  const top = container.querySelector('[data-special-analysis-kpi-ranking-top]');
+  const bottom = container.querySelector('[data-special-analysis-kpi-ranking-bottom]');
+  if (top) renderSpecialAnalysisOrdersMetaRankChart(top, config.top5 ?? []);
+  if (bottom) renderSpecialAnalysisOrdersMetaRankChart(bottom, config.bottom5 ?? []);
+}
+
+function renderSpecialAnalysisPerformanceTrendChart(container, values) {
+  if (!container) return;
+  const labels = ['1月', '2月', '3月', '4月', '5月', '6月'];
+  const width = container.clientWidth || 320;
+  const height = 180;
+  const baselineY = height - 24;
+  const chartHeight = height - 42;
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, max);
+  const range = max - min || 1;
+  const slotWidth = width / Math.max(values.length - 1, 1);
+  const points = values.map((value, index) => ({
+    x: slotWidth * index,
+    y: baselineY - ((value - min) / range) * chartHeight,
+    value,
+  }));
+  const path = points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`).join(' ');
+  const dots = points.map((point) => `<circle cx="${point.x.toFixed(2)}" cy="${point.y.toFixed(2)}" r="3" fill="#57b8ff"></circle>`).join('');
+  const labelsSvg = points.map((point, index) => `<text x="${point.x.toFixed(2)}" y="${height - 6}" fill="rgba(152,188,208,0.72)" font-size="10" text-anchor="middle">${labels[index]}</text>`).join('');
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <line x1="0" x2="${width}" y1="${baselineY}" y2="${baselineY}" stroke="var(--dt-chart-line-dim)" stroke-width="1"></line>
+      <path d="${path}" fill="none" stroke="#57b8ff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path>
+      ${dots}
+      ${labelsSvg}
+    </svg>
+  `;
+}
+
+function renderSpecialAnalysisPerformanceScoreChart(container, items) {
+  if (!container) return;
+  const width = 320;
+  const height = 220;
+  const centerX = width / 2;
+  const centerY = height / 2 - 10;
+  const radius = 72;
+  const total = items.reduce((sum, item) => sum + item.value, 0) || 1;
+  let startAngle = -90;
+  const slices = items.map((item) => {
+    const angle = (item.value / total) * 360;
+    const endAngle = startAngle + angle;
+    const largeArc = angle > 180 ? 1 : 0;
+    const x1 = centerX + radius * Math.cos((startAngle * Math.PI) / 180);
+    const y1 = centerY + radius * Math.sin((startAngle * Math.PI) / 180);
+    const x2 = centerX + radius * Math.cos((endAngle * Math.PI) / 180);
+    const y2 = centerY + radius * Math.sin((endAngle * Math.PI) / 180);
+    const color = item.belowAvg ? '#ff6b6b' : ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#73d5ff'][items.indexOf(item) % 5];
+    const path = `M ${centerX} ${centerY} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${radius} ${radius} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+    startAngle = endAngle;
+    return `<path d="${path}" fill="${color}"/>`;
+  }).join('');
+
+  const legend = items.map((item, index) => {
+    const color = item.belowAvg ? '#ff6b6b' : ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#73d5ff'][index % 5];
+    const lx = 12 + (index % 2) * 146;
+    const ly = 184 + Math.floor(index / 2) * 16;
+    return `
+      <rect x="${lx}" y="${ly - 8}" width="10" height="10" rx="2" fill="${color}"></rect>
+      <text x="${lx + 14}" y="${ly}" fill="${item.belowAvg ? '#ff9b9b' : 'rgba(152,188,208,0.8)'}" font-size="10">${item.label} ${item.value}</text>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" aria-hidden="true" style="width:100%;height:100%;">
+      ${slices}
+      <circle cx="${centerX}" cy="${centerY}" r="32" fill="rgba(8,20,36,0.95)"></circle>
+      <text x="${centerX}" y="${centerY + 5}" fill="var(--dt-text-emphasis)" font-size="13" font-weight="600" text-anchor="middle">指标得分</text>
+      ${legend}
+    </svg>
+  `;
+}
+
+function renderSpecialAnalysisOrdersMetaRankChart(container, items) {
+  if (!container) return;
+  const max = Math.max(...items.map((item) => item.value), 1);
+  container.innerHTML = `
+    <div class="map-orders-rank special-analysis-orders-panel__rank-list">
+      ${items
+        .map(
+          (item, index) => `
+            <button class="map-orders-rank__item special-analysis-orders-panel__rank-item special-analysis-orders-panel__rank-item--interactive" type="button" data-special-analysis-orders-unit="${item.label}">
+              <span class="map-orders-rank__index">${String(index + 1).padStart(2, '0')}</span>
+              <div class="map-orders-rank__main special-analysis-orders-panel__meta-rank-main">
+                <div class="map-orders-rank__head">
+                  <span class="map-orders-rank__label">${item.label}</span>
+                  <span class="map-orders-rank__value">${item.value}</span>
+                </div>
+                <div class="map-orders-rank__track">
+                  <span class="map-orders-rank__bar" style="width:${(item.value / max) * 100}%"></span>
+                </div>
+                <div class="special-analysis-orders-panel__meta-note">${item.meta}</div>
+              </div>
+            </button>
+          `
+        )
+        .join('')}
+    </div>
+  `;
+}
+
+function renderSpecialAnalysisUnitDispatchPanel(container, config) {
+  const focusItems = config.focusTop5 ?? [];
+  const activeFocus = focusItems.find((item) => item.label === SPECIAL_ANALYSIS_ORDERS_STATE.activeFocus) ?? focusItems[0] ?? null;
+  if (!SPECIAL_ANALYSIS_ORDERS_STATE.activeFocus && activeFocus) {
+    SPECIAL_ANALYSIS_ORDERS_STATE.activeFocus = activeFocus.label;
+  }
+
+  container.innerHTML = `
+    <section class="map-orders-card special-analysis-orders-panel__row-card">
+      <div class="map-orders-card__head">
+        <span class="map-orders-card__title">市民关注项 Top5</span>
+        <span class="map-orders-card__meta">流式卡片</span>
+      </div>
+      <div class="map-orders-card__content special-analysis-orders-panel__focus-list special-analysis-orders-panel__focus-list--wide" data-special-analysis-orders-focus-list></div>
+    </section>
+    <div class="special-analysis-orders-panel__mid-grid">
+      <section class="map-orders-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">工单数量趋势</span>
+          <span class="map-orders-card__meta">折线图</span>
+        </div>
+        <div class="map-orders-card__content special-analysis-orders-panel__trend-chart" data-special-analysis-orders-focus-trend></div>
+      </section>
+      <section class="map-orders-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">工单类型统计</span>
+          <span class="map-orders-card__meta">工单量 / 占比</span>
+        </div>
+        <div class="map-orders-card__content special-analysis-orders-panel__type-chart" data-special-analysis-orders-focus-type></div>
+      </section>
+    </div>
+    <div class="special-analysis-orders-panel__bottom-grid special-analysis-orders-panel__bottom-grid--wide">
+      <section class="map-orders-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">属地分布排行</span>
+          <span class="map-orders-card__meta">横向条状图</span>
+        </div>
+        <div class="map-orders-card__content" data-special-analysis-orders-focus-area></div>
+      </section>
+      <section class="map-orders-card">
+        <div class="map-orders-card__head">
+          <span class="map-orders-card__title">办结情况</span>
+          <span class="map-orders-card__meta">街办柱状图</span>
+        </div>
+        <div class="map-orders-card__content province-chart province-chart--bars" data-special-analysis-orders-focus-closure></div>
+      </section>
+    </div>
+  `;
+
+  const focusList = container.querySelector('[data-special-analysis-orders-focus-list]');
+  const trend = container.querySelector('[data-special-analysis-orders-focus-trend]');
+  const type = container.querySelector('[data-special-analysis-orders-focus-type]');
+  const area = container.querySelector('[data-special-analysis-orders-focus-area]');
+  const closure = container.querySelector('[data-special-analysis-orders-focus-closure]');
+
+  if (focusList) {
+    focusList.innerHTML = focusItems
+      .map(
+        (item, index) => `
+          <button class="special-analysis-orders-panel__focus-item${item.label === SPECIAL_ANALYSIS_ORDERS_STATE.activeFocus ? ' special-analysis-orders-panel__focus-item--active' : ''}" type="button" data-special-analysis-orders-focus="${item.label}">
+            <span class="special-analysis-orders-panel__focus-rank">${String(index + 1).padStart(2, '0')}</span>
+            <span class="special-analysis-orders-panel__focus-name">${item.label}</span>
+          </button>
+        `
+      )
+      .join('');
+  }
+
+  if (activeFocus && trend) renderSpecialAnalysisOrdersTrendChart(trend, activeFocus.trend);
+  if (activeFocus && type) renderSpecialAnalysisOrdersTypeChart(type, activeFocus.types);
+  if (activeFocus && area) renderSpecialAnalysisOrdersRegionRankChart(area, activeFocus.areas);
+  if (activeFocus && closure) renderSpecialAnalysisOrdersTop10Chart(closure, activeFocus.closures);
+}
+
+function getBottleneckPanelConfig() {
+  return {
+    '群众多次不满意': {
+      subtitle: '群众多次不满意',
+      depts: [
+        { name: '城管执法队', topics: ['夜间施工噪声扰民', '校园周边占道经营', '沿街商铺油烟投诉', '住宅区充电安全隐患', '老旧小区停车矛盾'], areas: ['天河区', '越秀区', '海珠区', '番禺区', '白云区'] },
+        { name: '住建局', topics: ['老旧小区停车矛盾', '商业街消防通道堵塞', '学校周边交通秩序整治', '沿街商铺油烟投诉', '城中村环境卫生反复投诉'], areas: ['海珠区', '番禺区', '天河区', '越秀区', '南山区'] },
+        { name: '生态环境分局', topics: ['沿街商铺油烟投诉', '夜间施工噪声扰民', '餐饮集中区油烟异味', '住宅区充电安全隐患', '学校周边交通秩序整治'], areas: ['白云区', '天河区', '海珠区', '番禺区', '越秀区'] },
+        { name: '消防救援站', topics: ['住宅区充电安全隐患', '商业街消防通道堵塞', '夜间施工噪声扰民', '学校周边交通秩序整治', '老旧小区停车矛盾'], areas: ['番禺区', '白云区', '天河区', '海珠区', '越秀区'] },
+        { name: '交警支队', topics: ['学校周边交通秩序整治', '校园周边占道经营', '夜间施工噪声扰民', '沿街商铺油烟投诉', '商业街消防通道堵塞'], areas: ['天河区', '南山区', '越秀区', '白云区', '海珠区'] },
+      ],
+    },
+    研判批示: {
+      subtitle: '研判批示',
+      depts: [
+        { name: '应急管理局', topics: ['商业街消防通道堵塞', '高层住宅电梯故障', '餐饮集中区油烟异味', '学校周边交通秩序整治', '城中村环境卫生反复投诉'], areas: ['南山区', '天河区', '福田区', '越秀区', '白云区'] },
+        { name: '消防救援站', topics: ['住宅区充电安全隐患', '商业街消防通道堵塞', '高层住宅电梯故障', '学校周边交通秩序整治', '老旧小区停车矛盾'], areas: ['福田区', '南山区', '越秀区', '白云区', '海珠区'] },
+        { name: '城运中心', topics: ['城中村环境卫生反复投诉', '夜间施工噪声扰民', '沿街商铺油烟投诉', '道路积水重复上报', '商业综合体秩序问题'], areas: ['天河区', '越秀区', '海珠区', '番禺区', '南山区'] },
+        { name: '住建局', topics: ['高层住宅电梯故障', '商业街消防通道堵塞', '道路积水重复上报', '餐饮集中区油烟异味', '学校周边交通秩序整治'], areas: ['越秀区', '福田区', '南山区', '海珠区', '白云区'] },
+        { name: '市场监管局', topics: ['餐饮集中区油烟异味', '城中村环境卫生反复投诉', '商业综合体秩序问题', '学校周边交通秩序整治', '夜间施工噪声扰民'], areas: ['白云区', '天河区', '番禺区', '越秀区', '南山区'] },
+      ],
+    },
+    多部门推诿: {
+      subtitle: '多部门推诿',
+      depts: [
+        { name: '住建局', topics: ['老旧小区停车矛盾', '道路积水重复上报', '沿街商铺油烟投诉', '商业综合体秩序问题', '住宅区充电安全隐患'], areas: ['海珠区', '番禺区', '天河区', '南山区', '白云区'] },
+        { name: '城管执法队', topics: ['沿街商铺油烟投诉', '夜间施工噪声扰民', '学校周边交通秩序整治', '城中村环境卫生反复投诉', '商业街消防通道堵塞'], areas: ['越秀区', '海珠区', '番禺区', '白云区', '天河区'] },
+        { name: '街道办', topics: ['商业综合体秩序问题', '老旧小区停车矛盾', '住宅区充电安全隐患', '餐饮集中区油烟异味', '道路积水重复上报'], areas: ['天河区', '南山区', '越秀区', '番禺区', '海珠区'] },
+        { name: '生态环境分局', topics: ['餐饮集中区油烟异味', '沿街商铺油烟投诉', '夜间施工噪声扰民', '商业综合体秩序问题', '住宅区充电安全隐患'], areas: ['白云区', '越秀区', '天河区', '海珠区', '番禺区'] },
+        { name: '消防救援站', topics: ['商业街消防通道堵塞', '住宅区充电安全隐患', '学校周边交通秩序整治', '老旧小区停车矛盾', '道路积水重复上报'], areas: ['南山区', '天河区', '白云区', '越秀区', '海珠区'] },
+      ],
+    },
+    '部门多次退单或反复退回': {
+      subtitle: '部门多次退单或反复退回',
+      depts: [
+        { name: '市场监管局', topics: ['城中村环境卫生反复投诉', '夜间施工噪声扰民', '商业街消防通道堵塞', '学校周边交通秩序整治', '餐饮集中区油烟异味'], areas: ['番禺区', '越秀区', '海珠区', '南山区', '天河区'] },
+        { name: '街道办', topics: ['老旧小区停车矛盾', '沿街商铺油烟投诉', '住宅区充电安全隐患', '商业综合体秩序问题', '城中村环境卫生反复投诉'], areas: ['天河区', '海珠区', '越秀区', '白云区', '番禺区'] },
+        { name: '城运中心', topics: ['学校周边交通秩序整治', '道路积水重复上报', '商业街消防通道堵塞', '餐饮集中区油烟异味', '夜间施工噪声扰民'], areas: ['南山区', '天河区', '越秀区', '海珠区', '白云区'] },
+        { name: '住建局', topics: ['老旧小区停车矛盾', '商业街消防通道堵塞', '学校周边交通秩序整治', '道路积水重复上报', '住宅区充电安全隐患'], areas: ['白云区', '天河区', '越秀区', '番禺区', '南山区'] },
+        { name: '城管执法队', topics: ['沿街商铺油烟投诉', '夜间施工噪声扰民', '城中村环境卫生反复投诉', '餐饮集中区油烟异味', '商业综合体秩序问题'], areas: ['海珠区', '越秀区', '白云区', '天河区', '番禺区'] },
+      ],
+    },
+  }[BOTTLENECK_PANEL_STATE.type] ?? {
+    subtitle: '难点堵点分析',
+    depts: [],
+  };
+}
+
+function renderBottleneckPanel() {
+  const panel = document.querySelector('[data-bottleneck-panel]');
+  if (!panel) return;
+  panel.dataset.bottleneckState = BOTTLENECK_PANEL_STATE.isOpen ? 'open' : 'closed';
+  if (!BOTTLENECK_PANEL_STATE.isOpen) return;
+
+  const config = getBottleneckPanelConfig();
+  const subtitle = panel.querySelector('[data-bottleneck-subtitle]');
+  const topicRank = panel.querySelector('[data-bottleneck-topic-rank]');
+  const areaRank = panel.querySelector('[data-bottleneck-area-rank]');
+  const deptList = panel.querySelector('[data-bottleneck-dept-list]');
+  if (subtitle) subtitle.textContent = config.subtitle;
+
+  const activeDept = config.depts.find((item) => item.name === BOTTLENECK_PANEL_STATE.activeDept) ?? config.depts[0] ?? null;
+  if (!BOTTLENECK_PANEL_STATE.activeDept && activeDept) {
+    BOTTLENECK_PANEL_STATE.activeDept = activeDept.name;
+  }
+
+  if (deptList) {
+    deptList.innerHTML = config.depts
+      .map((dept, index) => `
+        <button class="bottleneck-panel__dept-item${dept.name === BOTTLENECK_PANEL_STATE.activeDept ? ' bottleneck-panel__dept-item--active' : ''}" type="button" data-bottleneck-dept="${dept.name}">
+          <span class="bottleneck-panel__dept-rank">${String(index + 1).padStart(2, '0')}</span>
+          <span class="bottleneck-panel__dept-name">${dept.name}</span>
+          <span class="bottleneck-panel__dept-count">${128 - index * 12}</span>
+        </button>
+      `)
+      .join('');
+  }
+
+  if (activeDept && topicRank) {
+    renderProvinceSharedAxisBarChart(topicRank, activeDept.topics.map((label, index) => ({ label, value: 128 - index * 18, color: ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#ff6b6b'][index] })));
+  }
+  if (activeDept && areaRank) {
+    renderProvinceSharedAxisBarChart(areaRank, activeDept.areas.map((label, index) => ({ label, value: 116 - index * 16, color: ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#ff6b6b'][index] })));
+  }
+}
+
+function renderSpecialAnalysisPanel() {
+  const panel = document.querySelector('[data-special-analysis-panel]');
+  if (!panel) return;
+  panel.dataset.specialAnalysisPanelState = SPECIAL_ANALYSIS_PANEL_STATE.isOpen ? 'open' : 'closed';
+}
+
+function renderSpecialAnalysisDetailPanel() {
+  const panel = document.querySelector('[data-special-analysis-detail-panel]');
+  if (!panel) return;
+  panel.dataset.specialAnalysisDetailState = SPECIAL_ANALYSIS_DETAIL_STATE.isOpen ? 'open' : 'closed';
+  if (!SPECIAL_ANALYSIS_DETAIL_STATE.isOpen) return;
+
+  const nameEl = panel.querySelector('[data-special-analysis-detail-name]');
+  if (nameEl) nameEl.textContent = SPECIAL_ANALYSIS_DETAIL_STATE.itemName;
+
+  const subjectChartEl = panel.querySelector('[data-special-analysis-detail-subject-chart]');
+  if (subjectChartEl) {
+    const subjectData = generateSpecialAnalysisSubjectData();
+    renderAppealDetailBarChart(subjectChartEl, subjectData);
+  }
+
+  const trendChartEl = panel.querySelector('[data-special-analysis-detail-trend-chart]');
+  if (trendChartEl) {
+    const trendData = generateSpecialAnalysisTrendData();
+    renderAppealDetailLineChart(trendChartEl, trendData);
+  }
+
+  const unitChartEl = panel.querySelector('[data-special-analysis-detail-unit-chart]');
+  if (unitChartEl) {
+    const unitData = generateSpecialAnalysisUnitData();
+    renderAppealDetailPieChart(unitChartEl, unitData);
+  }
+
+  const areaChartEl = panel.querySelector('[data-special-analysis-detail-area-chart]');
+  if (areaChartEl) {
+    const areaData = generateSpecialAnalysisAreaData();
+    renderSpecialAnalysisAreaChart(areaChartEl, areaData);
+  }
+}
+
+function renderAppealDetailPanel() {
+  const panel = document.querySelector('[data-appeal-detail-panel]');
+  if (!panel) return;
+
+  if (APPEAL_DETAIL_STATE.isOpen) {
+    panel.dataset.appealDetailState = 'open';
+  } else {
+    panel.dataset.appealDetailState = 'closed';
+    return;
+  }
+
+  // 渲染事项名称
+  const nameEl = panel.querySelector('[data-appeal-detail-name]');
+  if (nameEl) nameEl.textContent = APPEAL_DETAIL_STATE.itemName;
+
+  // 渲染地理分布柱状图
+  const geoChartEl = panel.querySelector('[data-appeal-detail-geo-chart]');
+  if (geoChartEl) {
+    const geoData = generateGeoData();
+    renderAppealDetailBarChart(geoChartEl, geoData);
+  }
+
+  // 渲染工单量趋势折线图
+  const trendChartEl = panel.querySelector('[data-appeal-detail-trend-chart]');
+  if (trendChartEl) {
+    const trendData = generateTrendData();
+    renderAppealDetailLineChart(trendChartEl, trendData);
+  }
+
+  // 渲染关联单位扇形图
+  const unitChartEl = panel.querySelector('[data-appeal-detail-unit-chart]');
+  if (unitChartEl) {
+    const unitData = generateUnitData();
+    renderAppealDetailPieChart(unitChartEl, unitData);
+  }
+
+  // 渲染属地横向条状图
+  const areaChartEl = panel.querySelector('[data-appeal-detail-area-chart]');
+  if (areaChartEl) {
+    const areaData = generateAreaData();
+    renderAppealDetailHorizontalBarChart(areaChartEl, areaData);
+  }
+}
+
+function generateSpecialAnalysisSubjectData() {
+  const subjects = ['街道办', '物业公司', '施工单位', '商户经营方', '社区网格'];
+  const baseValue = Math.round(SPECIAL_ANALYSIS_DETAIL_STATE.value / 5);
+  return subjects.map((subject, i) => ({
+    label: subject,
+    value: Math.round(baseValue * (1.18 - i * 0.1)),
+    color: ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#ff6b6b'][i],
+  }));
+}
+
+function generateSpecialAnalysisTrendData() {
+  const months = ['1月', '2月', '3月', '4月', '5月', '6月'];
+  const baseValue = Math.max(Math.round(SPECIAL_ANALYSIS_DETAIL_STATE.value / 6), 1);
+  const multipliers = [0.68, 0.82, 0.9, 1.04, 0.98, 1.16];
+  return months.map((month, i) => ({
+    label: month,
+    value: Math.max(Math.round(baseValue * multipliers[i]), 1),
+  }));
+}
+
+function generateSpecialAnalysisUnitData() {
+  const units = ['城管执法队', '生态环境分局', '住建局', '消防救援站', '交警支队'];
+  const total = SPECIAL_ANALYSIS_DETAIL_STATE.value;
+  const percentages = [30, 24, 18, 15, 13];
+  return units.map((unit, i) => ({
+    label: unit,
+    value: Math.round((total * percentages[i]) / 100),
+    percent: percentages[i],
+    color: ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#ff6b6b'][i],
+  }));
+}
+
+const SPECIAL_ANALYSIS_AREA_DRILLDOWN = {
+  天河区: ['石牌街道办', '天河南街道办', '林和街道办'],
+  越秀区: ['北京街道办', '东山街道办', '洪桥街道办'],
+  海珠区: ['新港街道办', '江南中街道办', '赤岗街道办'],
+  番禺区: ['市桥街道办', '南村镇街道办', '大石街道办'],
+  白云区: ['同和街道办', '嘉禾街道办', '棠景街道办'],
+};
+
+function generateSpecialAnalysisAreaData() {
+  const baseValue = Math.round(SPECIAL_ANALYSIS_DETAIL_STATE.value / 5);
+  if (SPECIAL_ANALYSIS_DETAIL_STATE.areaLevel === 'street' && SPECIAL_ANALYSIS_DETAIL_STATE.activeDistrict) {
+    const streets = SPECIAL_ANALYSIS_AREA_DRILLDOWN[SPECIAL_ANALYSIS_DETAIL_STATE.activeDistrict] ?? [];
+    return streets.map((street, i) => ({
+      label: `${SPECIAL_ANALYSIS_DETAIL_STATE.activeDistrict}-${street}`,
+      value: Math.round(baseValue * (0.96 - i * 0.14)),
+    }));
+  }
+
+  const areas = ['天河区', '越秀区', '海珠区', '番禺区', '白云区'];
+  return areas.map((area, i) => ({
+    label: area,
+    value: Math.round(baseValue * (1 - i * 0.16)),
+  }));
+}
+
+function generateGeoData() {
+  const regions = ['广州', '深圳', '佛山', '东莞', '珠海', '中山', '惠州'];
+  const baseValue = Math.round(APPEAL_DETAIL_STATE.value / 7);
+  return regions.map((region, i) => ({
+    label: region,
+    value: Math.round(baseValue * (1.2 - i * 0.12)),
+    color: ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#ff6b6b', '#51cf66', '#ffd43b'][i],
+  }));
+}
+
+function generateTrendData() {
+  const months = ['1月', '2月', '3月', '4月', '5月', '6月'];
+  const baseValue = Math.max(Math.round(APPEAL_DETAIL_STATE.value / 6), 1);
+  const multipliers = [0.72, 0.84, 0.93, 1.08, 0.96, 1.15];
+  return months.map((month, i) => ({
+    label: month,
+    value: Math.max(Math.round(baseValue * multipliers[i]), 1),
+  }));
+}
+
+function generateUnitData() {
+  const units = ['城管局', '市场监管局', '住建局', '环保局', '交通局'];
+  const total = APPEAL_DETAIL_STATE.value;
+  const percentages = [28, 22, 18, 15, 17];
+  return units.map((unit, i) => ({
+    label: unit,
+    value: Math.round(total * percentages[i] / 100),
+    percent: percentages[i],
+    color: ['#57b8ff', '#4de0d4', '#8b9bff', '#ffb561', '#ff6b6b'][i],
+  }));
+}
+
+function generateAreaData() {
+  const areas = ['天河区', '越秀区', '海珠区', '番禺区', '白云区'];
+  const baseValue = Math.round(APPEAL_DETAIL_STATE.value / 5);
+  return areas.map((area, i) => ({
+    label: area,
+    value: Math.round(baseValue * (1 - i * 0.18)),
+  }));
+}
+
+function renderAppealDetailBarChart(container, data) {
+  const width = 320;
+  const height = 200;
+  const baselineY = height - 24;
+  const chartHeight = height - 40;
+  const max = Math.max(...data.map((d) => d.value), 1);
+  const slotWidth = width / data.length;
+  const barWidth = Math.min(slotWidth * 0.5, 32);
+
+  const bars = data.map((item, i) => {
+    const x = slotWidth * i + (slotWidth - barWidth) / 2;
+    const barHeight = (item.value / max) * chartHeight;
+    const y = baselineY - barHeight;
+    return `
+      <rect x="${x.toFixed(2)}" y="${y.toFixed(2)}" width="${barWidth.toFixed(2)}" height="${barHeight.toFixed(2)}" rx="4" fill="${item.color}"/>
+      <text x="${(x + barWidth / 2).toFixed(2)}" y="${height - 6}" fill="rgba(152,188,208,0.8)" font-size="11" text-anchor="middle">${item.label}</text>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" aria-hidden="true" style="width:100%;height:100%;">
+      ${bars}
+    </svg>
+  `;
+}
+
+function renderAppealDetailLineChart(container, data) {
+  const width = 320;
+  const height = 200;
+  const baselineY = height - 24;
+  const chartHeight = height - 40;
+  const max = Math.max(...data.map((d) => d.value), 1);
+  const slotWidth = width / data.length;
+  const gradientId = nextChartId('detail-line-fill');
+
+  const points = data.map((d, i) => {
+    const x = slotWidth * i + slotWidth / 2;
+    const y = baselineY - (d.value / max) * chartHeight;
+    return { x, y };
+  });
+
+  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ');
+  const areaD = `${pathD} L ${width} ${baselineY} L 0 ${baselineY} Z`;
+
+  const dots = points.map((p) => `<circle cx="${p.x.toFixed(2)}" cy="${p.y.toFixed(2)}" r="4" fill="#57b8ff"/>`).join('');
+  const labels = data.map((d, i) => {
+    const x = slotWidth * i + slotWidth / 2;
+    return `<text x="${x.toFixed(2)}" y="${height - 6}" fill="rgba(152,188,208,0.8)" font-size="11" text-anchor="middle">${d.label}</text>`;
+  }).join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" aria-hidden="true" style="width:100%;height:100%;">
+      <defs>
+        <linearGradient id="${gradientId}" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stop-color="rgba(87, 184, 255, 0.35)"/>
+          <stop offset="100%" stop-color="rgba(87, 184, 255, 0.02)"/>
+        </linearGradient>
+      </defs>
+      <path d="${areaD}" fill="url(#${gradientId})"/>
+      <path d="${pathD}" fill="none" stroke="#57b8ff" stroke-width="2.5" stroke-linecap="round"/>
+      ${dots}
+      ${labels}
+    </svg>
+  `;
+}
+
+function renderAppealDetailPieChart(container, data) {
+  const width = 320;
+  const height = 200;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = Math.min(width, height) / 2 - 20;
+
+  const total = data.reduce((sum, d) => sum + d.value, 0);
+  let startAngle = -90;
+
+  const slices = data.map((item) => {
+    const angle = (item.value / total) * 360;
+    const endAngle = startAngle + angle;
+    const largeArc = angle > 180 ? 1 : 0;
+
+    const x1 = centerX + radius * Math.cos((startAngle * Math.PI) / 180);
+    const y1 = centerY + radius * Math.sin((startAngle * Math.PI) / 180);
+    const x2 = centerX + radius * Math.cos((endAngle * Math.PI) / 180);
+    const y2 = centerY + radius * Math.sin((endAngle * Math.PI) / 180);
+
+    const path = `M ${centerX} ${centerY} L ${x1.toFixed(2)} ${y1.toFixed(2)} A ${radius} ${radius} 0 ${largeArc} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+    startAngle = endAngle;
+
+    return `<path d="${path}" fill="${item.color}"/>`;
+  }).join('');
+
+  // 图例
+  const legend = data.map((item, i) => {
+    const lx = 10 + (i % 3) * 105;
+    const ly = height - 20;
+    return `
+      <rect x="${lx}" y="${ly - 8}" width="10" height="10" rx="2" fill="${item.color}"/>
+      <text x="${lx + 14}" y="${ly}" fill="rgba(152,188,208,0.8)" font-size="10">${item.label}</text>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" aria-hidden="true" style="width:100%;height:100%;">
+      ${slices}
+      <circle cx="${centerX}" cy="${centerY}" r="${radius * 0.45}" fill="rgba(8,20,36,0.95)"/>
+      <text x="${centerX}" y="${centerY + 5}" fill="var(--dt-text-emphasis)" font-size="14" font-weight="600" text-anchor="middle">${total.toLocaleString()}</text>
+      ${legend}
+    </svg>
+  `;
+}
+
+function renderAppealDetailHorizontalBarChart(container, data) {
+  const width = 320;
+  const height = 200;
+  const max = Math.max(...data.map((d) => d.value), 1);
+  const rowHeight = (height - 20) / data.length;
+  const barGap = 6;
+  const labelWidth = 112;
+
+  const bars = data.map((item, i) => {
+    const y = i * rowHeight + barGap;
+    const barHeight = rowHeight - barGap * 2;
+    const barWidth = ((item.value / max) * (width - labelWidth - 50));
+    const x = labelWidth;
+
+    return `
+      <text x="8" y="${y + barHeight / 2 + 4}" fill="rgba(152,188,208,0.8)" font-size="11">${item.label}</text>
+      <rect x="${x}" y="${y}" width="${Math.max(barWidth, 0).toFixed(2)}" height="${barHeight.toFixed(2)}" rx="3" fill="rgba(87,184,255,0.75)"/>
+      <text x="${x + Math.max(barWidth, 0) + 8}" y="${y + barHeight / 2 + 4}" fill="var(--dt-text-emphasis)" font-size="11" font-weight="500">${item.value.toLocaleString()}</text>
+    `;
+  }).join('');
+
+  container.innerHTML = `
+    <svg viewBox="0 0 ${width} ${height}" aria-hidden="true" style="width:100%;height:100%;">
+      ${bars}
+    </svg>
+  `;
+}
+
+function renderSpecialAnalysisAreaChart(container, data) {
+  const width = 320;
+  const height = 200;
+  const max = Math.max(...data.map((d) => d.value), 1);
+  const rowHeight = (height - 20) / data.length;
+  const barGap = 6;
+  const labelWidth = 112;
+
+  const rows = data.map((item, i) => {
+    const y = i * rowHeight + barGap;
+    const barHeight = rowHeight - barGap * 2;
+    const barWidth = ((item.value / max) * (width - labelWidth - 50));
+    const x = labelWidth;
+    return `
+      <g class="special-analysis-area-row" data-special-area-label="${item.label}">
+        <text x="8" y="${y + barHeight / 2 + 4}" fill="rgba(152,188,208,0.8)" font-size="11">${item.label}</text>
+        <rect x="${x}" y="${y}" width="${Math.max(barWidth, 0).toFixed(2)}" height="${barHeight.toFixed(2)}" rx="3" fill="rgba(87,184,255,0.75)"/>
+        <text x="${x + Math.max(barWidth, 0) + 8}" y="${y + barHeight / 2 + 4}" fill="var(--dt-text-emphasis)" font-size="11" font-weight="500">${item.value.toLocaleString()}</text>
+      </g>
+    `;
+  }).join('');
+
+  const backButton = SPECIAL_ANALYSIS_DETAIL_STATE.areaLevel === 'street'
+    ? '<button class="special-analysis-area-back" type="button" data-special-analysis-area-back>返回区级</button>'
+    : '';
+
+  container.innerHTML = `
+    <div class="special-analysis-area-chart">
+      ${backButton}
+      <svg viewBox="0 0 ${width} ${height}" aria-hidden="true" style="width:100%;height:100%;">
+        ${rows}
+      </svg>
+      <div class="special-analysis-area-trigger-layer">
+        ${data.map((item, i) => {
+          const y = i * rowHeight + barGap;
+          const barHeight = rowHeight - barGap * 2;
+          return `<button class="special-analysis-area-trigger" type="button" data-special-analysis-area="${item.label}" style="left:0;right:0;top:${(y / height) * 100}%;height:${(barHeight / height) * 100}%"></button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
 function closeWorkbench() {
   WORKBENCH_STATE.isOpen = false;
   closeDetailWorkbench();
@@ -2022,6 +4442,8 @@ function setWorkbenchPage(page) {
 
 function setActiveTopic(topic) {
   activeTopic = topic;
+  syncTimeFilterControls(topic);
+  twinMapScenes.get('special-analysis')?.setActive(topic === 'special-analysis');
 
   topicTabs.forEach((tab) => {
     const isActive = tab.dataset.topicTab === topic;
@@ -2042,6 +4464,15 @@ function setActiveTopic(topic) {
   if (CITY_TOPICS.includes(topic)) {
     window.requestAnimationFrame(() => {
       twinMapScenes.get(topic)?.resize();
+      if (topic === 'appeal-map') {
+        renderAppealHotItemChart(document.querySelector('[data-appeal-hotitem-tab.biz-hotrank__tab--active]')?.dataset.appealHotitemTab ?? 'level1');
+        renderAppealRegionChart(document.querySelector('[data-appeal-region-tab.biz-hotrank__tab--active]')?.dataset.appealRegionTab ?? 'city');
+        renderAppealNewItemChart(document.querySelector('[data-appeal-newitem-tab.biz-hotrank__tab--active]')?.dataset.appealNewitemTab ?? 'level1');
+        renderAppealNewRegionChart(document.querySelector('[data-appeal-newregion-tab.biz-hotrank__tab--active]')?.dataset.appealNewregionTab ?? 'city');
+      }
+      if (topic === 'special-analysis') {
+        renderSpecialAnalysisKpiOverlay();
+      }
     });
   }
 }
@@ -2073,12 +4504,96 @@ function bindTopicTabs() {
   setActiveTopic(activeTab?.dataset.topicTab ?? 'city-stats');
 }
 
+function bindBreadcrumbBack() {
+  document.addEventListener('click', (event) => {
+    const backBtn = event.target.closest('[data-breadcrumb-back]');
+    if (!backBtn) return;
+    const topic = backBtn.closest('[data-topic-content]')?.dataset.topicContent ?? '';
+    if (CITY_TOPICS.includes(topic)) {
+      drillbackToProvince(topic);
+    }
+  });
+}
+
 function bindWorkbenchTriggers() {
   document.addEventListener('click', (event) => {
+    const bottleneckCloseButton = event.target.closest('[data-bottleneck-close]');
+    if (bottleneckCloseButton) {
+      closeBottleneckPanel();
+      return;
+    }
+
+    const bottleneckDeptTrigger = event.target.closest('[data-bottleneck-dept]');
+    if (bottleneckDeptTrigger) {
+      BOTTLENECK_PANEL_STATE.activeDept = bottleneckDeptTrigger.dataset.bottleneckDept ?? '';
+      renderBottleneckPanel();
+      return;
+    }
+
+    const bottleneckTrigger = event.target.closest('[data-bottleneck-trigger]');
+    if (bottleneckTrigger) {
+      openBottleneckPanel(bottleneckTrigger.dataset.bottleneckTrigger ?? '');
+      return;
+    }
+
+    const specialAnalysisAreaBackButton = event.target.closest('[data-special-analysis-area-back]');
+    if (specialAnalysisAreaBackButton) {
+      SPECIAL_ANALYSIS_DETAIL_STATE.areaLevel = 'district';
+      SPECIAL_ANALYSIS_DETAIL_STATE.activeDistrict = '';
+      renderSpecialAnalysisDetailPanel();
+      return;
+    }
+
+    const specialAnalysisAreaTrigger = event.target.closest('[data-special-analysis-area]');
+    if (specialAnalysisAreaTrigger) {
+      if (SPECIAL_ANALYSIS_DETAIL_STATE.areaLevel === 'district') {
+        SPECIAL_ANALYSIS_DETAIL_STATE.areaLevel = 'street';
+        SPECIAL_ANALYSIS_DETAIL_STATE.activeDistrict = specialAnalysisAreaTrigger.dataset.specialAnalysisArea ?? '';
+        renderSpecialAnalysisDetailPanel();
+      }
+      return;
+    }
+
+    const specialAnalysisDetailCloseButton = event.target.closest('[data-special-analysis-detail-close]');
+    if (specialAnalysisDetailCloseButton) {
+      closeSpecialAnalysisDetailPanel();
+      return;
+    }
+
+    const specialAnalysisOrdersCloseButton = event.target.closest('[data-special-analysis-orders-close]');
+    if (specialAnalysisOrdersCloseButton) {
+      closeSpecialAnalysisOrdersPanel();
+      return;
+    }
+
+    const specialAnalysisTicketDetailCloseButton = event.target.closest('[data-special-analysis-ticket-detail-close]');
+    if (specialAnalysisTicketDetailCloseButton) {
+      closeSpecialAnalysisTicketDetailPanel();
+      return;
+    }
+
+    const specialAnalysisTicketCloseButton = event.target.closest('[data-special-analysis-ticket-close]');
+    if (specialAnalysisTicketCloseButton) {
+      closeSpecialAnalysisTicketPanel();
+      return;
+    }
+
+    const specialAnalysisPanelCloseButton = event.target.closest('[data-special-analysis-panel-close]');
+    if (specialAnalysisPanelCloseButton) {
+      closeSpecialAnalysisPanel();
+      return;
+    }
+
     const cityPanelCloseButton = event.target.closest('[data-city-panel-close]');
     if (cityPanelCloseButton) {
       const topic = cityPanelCloseButton.closest('[data-topic-content]')?.dataset.topicContent ?? getActiveCityTopic();
       closeCityPanel(topic);
+      return;
+    }
+
+    const appealDetailCloseButton = event.target.closest('[data-appeal-detail-close]');
+    if (appealDetailCloseButton) {
+      closeAppealDetailPanel();
       return;
     }
 
@@ -2132,8 +4647,66 @@ function bindWorkbenchTriggers() {
       return;
     }
 
+    const specialAnalysisItem = event.target.closest('[data-special-analysis-item]');
+    if (specialAnalysisItem) {
+      openSpecialAnalysisDetailPanel(specialAnalysisItem.dataset.specialAnalysisItem ?? '');
+      return;
+    }
+
+    const specialAnalysisPerformanceTrigger = event.target.closest('[data-special-analysis-performance-trigger]');
+    if (specialAnalysisPerformanceTrigger) {
+      openSpecialAnalysisOrdersPanel('performance', specialAnalysisPerformanceTrigger.dataset.specialAnalysisPerformanceTrigger ?? '');
+      return;
+    }
+
+    const specialAnalysisTicketItemTrigger = event.target.closest('[data-special-analysis-ticket-item]');
+    if (specialAnalysisTicketItemTrigger) {
+      openSpecialAnalysisTicketDetailPanel(specialAnalysisTicketItemTrigger.dataset.specialAnalysisTicketItem ?? '');
+      return;
+    }
+
+    const specialAnalysisTicketTrigger = event.target.closest('[data-special-analysis-ticket-trigger]');
+    if (specialAnalysisTicketTrigger) {
+      openSpecialAnalysisTicketPanel(specialAnalysisTicketTrigger.dataset.specialAnalysisTicketTrigger ?? '');
+      return;
+    }
+
+    const specialAnalysisOrdersTrigger = event.target.closest('[data-special-analysis-orders-trigger]');
+    if (specialAnalysisOrdersTrigger) {
+      const activeUnit = specialAnalysisOrdersTrigger.dataset.specialAnalysisOrdersUnit ?? specialAnalysisOrdersTrigger.closest('[data-special-analysis-warning-unit]')?.dataset.specialAnalysisWarningUnit ?? '';
+      const activeFocus = specialAnalysisOrdersTrigger.dataset.specialAnalysisOrdersTrigger === 'kpi-unit-ranking'
+        ? specialAnalysisOrdersTrigger.dataset.specialAnalysisKpiTrigger ?? ''
+        : '';
+      openSpecialAnalysisOrdersPanel(specialAnalysisOrdersTrigger.dataset.specialAnalysisOrdersTrigger ?? '', activeUnit, activeFocus);
+      return;
+    }
+
+    const specialAnalysisOrdersUnitTrigger = event.target.closest('[data-special-analysis-orders-unit]');
+    if (specialAnalysisOrdersUnitTrigger) {
+      openSpecialAnalysisOrdersPanel('unit-dispatch', specialAnalysisOrdersUnitTrigger.dataset.specialAnalysisOrdersUnit ?? '');
+      return;
+    }
+
+    const specialAnalysisOrdersFocusTrigger = event.target.closest('[data-special-analysis-orders-focus]');
+    if (specialAnalysisOrdersFocusTrigger) {
+      SPECIAL_ANALYSIS_ORDERS_STATE.activeFocus = specialAnalysisOrdersFocusTrigger.dataset.specialAnalysisOrdersFocus ?? '';
+      renderSpecialAnalysisOrdersPanel();
+      return;
+    }
+
+    const specialAnalysisOrdersDeptTrigger = event.target.closest('[data-special-analysis-orders-dept]');
+    if (specialAnalysisOrdersDeptTrigger) {
+      SPECIAL_ANALYSIS_ORDERS_STATE.activeDept = specialAnalysisOrdersDeptTrigger.dataset.specialAnalysisOrdersDept ?? '';
+      renderSpecialAnalysisOrdersPanel();
+      return;
+    }
+
     const trigger = event.target.closest('[data-workbench-trigger]');
     if (!trigger) return;
+    if (trigger.dataset.workbenchTrigger === 'special-analysis-items') {
+      openSpecialAnalysisPanel();
+      return;
+    }
     openWorkbench(trigger.dataset.workbenchTrigger, trigger.dataset.workbenchArea ?? '');
   });
 
@@ -2159,7 +4732,7 @@ function bindWorkbenchTriggers() {
     }
 
     if (event.key !== 'Enter' && event.key !== ' ') return;
-    const trigger = event.target.closest('[data-city-panel-close], [data-orders-workbench-trigger], [data-orders-workbench-close], [data-orders-jump], [data-workbench-trigger], [data-workbench-close], [data-workbench-page], [data-workbench-page-nav], [data-detail-trigger], [data-detail-close]');
+    const trigger = event.target.closest('[data-bottleneck-dept], [data-bottleneck-trigger], [data-bottleneck-close], [data-special-analysis-item], [data-special-analysis-area], [data-special-analysis-area-back], [data-special-analysis-detail-close], [data-special-analysis-orders-trigger], [data-special-analysis-orders-unit], [data-special-analysis-orders-focus], [data-special-analysis-orders-dept], [data-special-analysis-orders-close], [data-special-analysis-performance-trigger], [data-special-analysis-ticket-trigger], [data-special-analysis-ticket-item], [data-special-analysis-ticket-close], [data-special-analysis-ticket-detail-close], [data-special-analysis-panel-close], [data-city-panel-close], [data-orders-workbench-trigger], [data-orders-workbench-close], [data-orders-jump], [data-workbench-trigger], [data-workbench-close], [data-workbench-page], [data-workbench-page-nav], [data-detail-trigger], [data-detail-close]');
     if (!trigger) return;
     event.preventDefault();
     trigger.click();
@@ -2176,6 +4749,11 @@ function renderBusinessCharts() {
 
 function initBusinessCards() {
   renderBusinessCharts();
+  renderAppealHotItemChart('level1');
+  renderAppealRegionChart('city');
+  renderAppealNewItemChart('level1');
+  renderAppealNewRegionChart('city');
+  Object.keys(TIME_FILTER_STATE).forEach((topic) => syncTimeFilterControls(topic));
   CITY_TOPICS.forEach((topic) => {
     renderBasicInfoStats(topic);
     getScopedTopicElements(topic, '[data-overview-stats]').forEach((container) => {
@@ -2192,6 +4770,9 @@ function initBusinessCards() {
     });
     renderOrdersWorkbench(topic);
     renderCityPanel(topic);
+    if (topic === 'special-analysis') {
+      renderSpecialAnalysisKpiOverlay();
+    }
   });
   renderProvinceWarningCards();
   renderWorkbench();
@@ -2207,12 +4788,22 @@ async function initTwinMapScenes() {
   const startTasks = CITY_TOPICS.map(async (topic) => {
     const viewport = getTopicViewport(topic);
     if (!viewport) return;
-    const scene = new TwinMapScene(viewport, {
-      drilldownOnSelect: topic === 'appeal-map',
-      onRegionSelect: (region) => openCityPanel(region?.name ?? '', topic),
-    });
+
+    const SceneClass = topic === 'city-stats' ? TwinMapSceneCityStats : topic === 'appeal-map' ? TwinMapSceneAppealMap : TwinMapSceneSpecialAnalysis;
+    const sceneOptions = topic === 'city-stats'
+      ? { onRegionSelect: (region) => openCityPanel(region?.name ?? '', topic) }
+      : topic === 'appeal-map'
+        ? { drilldownOnSelect: true, onRegionSelect: (region) => drilldownToCity(region, topic) }
+        : {};
+
+    const scene = new SceneClass(viewport, sceneOptions);
     twinMapScenes.set(topic, scene);
-    await scene.start();
+
+    try {
+      await scene.start();
+    } catch (error) {
+      console.warn(`地图场景 ${topic} 启动失败:`, error);
+    }
   });
 
   await Promise.all(startTasks);
@@ -2227,6 +4818,12 @@ async function init() {
   await initTwinMapScenes();
   bindTopicTabs();
   bindWorkbenchTriggers();
+  bindBreadcrumbBack();
+  bindAppealHotItemTabs();
+  bindAppealRegionTabs();
+  bindAppealNewItemTabs();
+  bindAppealNewRegionTabs();
+  bindTimeFilters();
   initBusinessCards();
   window.addEventListener('resize', handleResize);
 }

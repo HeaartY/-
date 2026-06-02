@@ -41,16 +41,36 @@
 
       <div class="screen-shell">
       <header class="topbar topbar--hud" role="banner" aria-label="事件智能感知地图标题栏">
-        <div class="topbar__hud-wing topbar__hud-wing--left" aria-hidden="true">
-          <svg viewBox="0 0 560 80" class="topbar__hud-svg" preserveAspectRatio="none">
-            <path class="topbar__hud-stroke" d="M14 40 H186 L220 14 H352 L386 40 H560" />
-            <path class="topbar__hud-stroke topbar__hud-stroke--dim" d="M34 54 H202 L228 28 H328" />
-            <path class="topbar__hud-stroke topbar__hud-stroke--short" d="M264 56 H360" />
-            <path class="topbar__hud-accent" d="M72 22 H136" />
-            <path class="topbar__hud-accent" d="M422 22 H480" />
-            <path class="topbar__hud-cut" d="M186 40 L220 14" />
-            <path class="topbar__hud-cut" d="M352 14 L386 40" />
-          </svg>
+        <div class="topbar__left-zone">
+          <div class="topbar__filters" data-special-topbar-filters hidden>
+            <label class="biz-time-select topbar__context-select">
+              <span class="biz-time-select__label">专题</span>
+              <select class="biz-time-select__control" data-special-topic-select aria-label="事件专题分析专题选择">
+                <option value="governance">治理专题</option>
+                <option value="safety">安全专题</option>
+                <option value="service">民生服务</option>
+              </select>
+            </label>
+            <label class="biz-time-select topbar__context-select">
+              <span class="biz-time-select__label">区域</span>
+              <select class="biz-time-select__control" data-special-region-select aria-label="事件专题分析区域选择">
+                <option value="guangdong">广东省</option>
+                <option value="guangzhou">广州市</option>
+                <option value="shenzhen">深圳市</option>
+              </select>
+            </label>
+          </div>
+          <div class="topbar__hud-wing topbar__hud-wing--left" aria-hidden="true">
+            <svg viewBox="0 0 560 80" class="topbar__hud-svg" preserveAspectRatio="none">
+              <path class="topbar__hud-stroke" d="M14 40 H186 L220 14 H352 L386 40 H560" />
+              <path class="topbar__hud-stroke topbar__hud-stroke--dim" d="M34 54 H202 L228 28 H328" />
+              <path class="topbar__hud-stroke topbar__hud-stroke--short" d="M264 56 H360" />
+              <path class="topbar__hud-accent" d="M72 22 H136" />
+              <path class="topbar__hud-accent" d="M422 22 H480" />
+              <path class="topbar__hud-cut" d="M186 40 L220 14" />
+              <path class="topbar__hud-cut" d="M352 14 L386 40" />
+            </svg>
+          </div>
         </div>
         <div class="topbar__title-shell">
           <div class="topbar__title-block topbar__title-block--hud">
@@ -58,37 +78,72 @@
             <h1 class="topbar__title topbar__title--hud">事件智能感知地图</h1>
           </div>
         </div>
-        <div class="topbar__hud-wing topbar__hud-wing--right" aria-hidden="true">
-          <svg viewBox="0 0 560 80" class="topbar__hud-svg" preserveAspectRatio="none">
-            <path class="topbar__hud-stroke" d="M14 40 H186 L220 14 H352 L386 40 H560" />
-            <path class="topbar__hud-stroke topbar__hud-stroke--dim" d="M34 54 H202 L228 28 H328" />
-            <path class="topbar__hud-stroke topbar__hud-stroke--short" d="M264 56 H360" />
-            <path class="topbar__hud-accent" d="M72 22 H136" />
-            <path class="topbar__hud-accent" d="M422 22 H480" />
-            <path class="topbar__hud-cut" d="M186 40 L220 14" />
-            <path class="topbar__hud-cut" d="M352 14 L386 40" />
-          </svg>
+        <div class="topbar__right-zone">
+          <div class="topbar__hud-wing topbar__hud-wing--right" aria-hidden="true">
+            <svg viewBox="0 0 560 80" class="topbar__hud-svg" preserveAspectRatio="none">
+              <path class="topbar__hud-stroke" d="M14 40 H186 L220 14 H352 L386 40 H560" />
+              <path class="topbar__hud-stroke topbar__hud-stroke--dim" d="M34 54 H202 L228 28 H328" />
+              <path class="topbar__hud-stroke topbar__hud-stroke--short" d="M264 56 H360" />
+              <path class="topbar__hud-accent" d="M72 22 H136" />
+              <path class="topbar__hud-accent" d="M422 22 H480" />
+              <path class="topbar__hud-cut" d="M186 40 L220 14" />
+              <path class="topbar__hud-cut" d="M352 14 L386 40" />
+            </svg>
+          </div>
+          <div class="topbar__actions">
+            <label class="biz-time-select topbar__time-select" data-page-time-filter>
+              <span class="biz-time-select__label">统计时间</span>
+              <select class="biz-time-select__control" aria-label="页面统计时间">
+                <option value="today">今日</option>
+                <option value="week">本周</option>
+                <option value="month">本月</option>
+                <option value="30d">近30日</option>
+              </select>
+            </label>
+          </div>
         </div>
       </header>
 
       <div class="main-layout">
         <aside class="left-rail rail" data-topic-content="city-stats">
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--ops biz-card biz-card--kpi biz-panel biz-basicinfo">
-            <div class="biz-hotrank__head biz-basicinfo__head">
+          <section class="dt-panel dt-panel--interactive rail-module biz-card biz-card--kpi biz-panel biz-basicinfo">
+            <div class="biz-hotrank__head biz-basicinfo__head" data-panel-key="basic-info">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
                 <span class="biz-hotrank__title">基本信息</span>
+              </div>
+              <div class="biz-panel__actions">
+                <label class="biz-time-select" data-time-filter data-panel-key="basic-info">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="基本信息统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div class="module-body biz-card__body biz-basicinfo__body">
               <div class="biz-basicinfo__grid" data-basic-info-stats></div>
             </div>
           </section>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--analysis biz-card biz-card--trend biz-panel biz-workorder">
-            <div class="biz-hotrank__head biz-workorder__head">
+          <section class="dt-panel dt-panel--interactive rail-module biz-card biz-card--trend biz-panel biz-workorder">
+            <div class="biz-hotrank__head biz-workorder__head" data-panel-key="workorder">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
                 <span class="biz-hotrank__title">工单办理情况</span>
+              </div>
+              <div class="biz-panel__actions">
+                <label class="biz-time-select" data-time-filter data-panel-key="workorder">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="工单办理情况统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div class="module-body biz-card__body biz-trend biz-trend--analysis">
@@ -214,15 +269,26 @@
         </main>
 
         <aside class="right-rail rail" data-topic-content="city-stats">
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--ranking rail-module--right-top biz-card biz-card--ranking biz-panel biz-hotrank" data-workbench-trigger="hotrank" role="button" tabindex="0" aria-label="打开事件热点案件列表">
-            <div class="biz-hotrank__head">
+          <section class="dt-panel dt-panel--interactive rail-module rail-module--ranking biz-card biz-card--ranking biz-panel biz-hotrank" data-workbench-trigger="hotrank" role="button" tabindex="0" aria-label="打开事件热点案件列表">
+            <div class="biz-hotrank__head" data-panel-key="hotrank">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
                 <span class="biz-hotrank__title">事件热点 Top5</span>
               </div>
-              <div class="biz-hotrank__tabs" role="tablist" aria-label="排行榜范围切换">
-                <span class="biz-hotrank__tab biz-hotrank__tab--active">TOP5</span>
-                <span class="biz-hotrank__tab">TOP10</span>
+              <div class="biz-panel__actions">
+                <div class="biz-hotrank__tabs" role="tablist" aria-label="排行榜范围切换">
+                  <span class="biz-hotrank__tab biz-hotrank__tab--active">TOP5</span>
+                  <span class="biz-hotrank__tab">TOP10</span>
+                </div>
+                <label class="biz-time-select" data-time-filter data-panel-key="hotrank">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="事件热点统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div class="module-body biz-card__body biz-hotrank__body">
@@ -236,11 +302,22 @@
               <div class="biz-hotrank__list" data-rank-list></div>
             </div>
           </section>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--risk rail-module--right-bottom biz-card biz-panel biz-distribution" data-workbench-trigger="distribution" role="button" tabindex="0" aria-label="打开工单类型案件列表">
-            <div class="biz-hotrank__head biz-distribution__head">
+          <section class="dt-panel dt-panel--interactive rail-module rail-module--risk biz-card biz-panel biz-distribution" data-workbench-trigger="distribution" role="button" tabindex="0" aria-label="打开工单类型案件列表">
+            <div class="biz-hotrank__head biz-distribution__head" data-panel-key="distribution">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
                 <span class="biz-hotrank__title">工单类型分布</span>
+              </div>
+              <div class="biz-panel__actions">
+                <label class="biz-time-select" data-time-filter data-panel-key="distribution">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="工单类型分布统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div class="module-body biz-card__body biz-distribution__body">
@@ -250,62 +327,58 @@
         </aside>
 
         <aside class="left-rail rail" data-topic-content="appeal-map" hidden>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--ops biz-card biz-card--kpi biz-panel biz-basicinfo">
-            <div class="biz-hotrank__head biz-basicinfo__head">
+          <section class="dt-panel dt-panel--interactive rail-module appeal-rail-module appeal-rail-module--top biz-card biz-card--kpi biz-panel biz-appeal-hotitem">
+            <div class="biz-hotrank__head biz-appeal-hotitem__head" data-panel-key="appeal-hotitem">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
-                <span class="biz-hotrank__title">基本信息</span>
+                <span class="biz-hotrank__title">热点事项TOP5</span>
+              </div>
+              <div class="biz-panel__actions">
+                <div class="biz-hotrank__tabs" role="tablist" aria-label="事项级别切换" data-appeal-hotitem-tabs>
+                  <span class="biz-hotrank__tab biz-hotrank__tab--active" data-appeal-hotitem-tab="level1">一级事项</span>
+                  <span class="biz-hotrank__tab" data-appeal-hotitem-tab="level2">二级事项</span>
+                  <span class="biz-hotrank__tab" data-appeal-hotitem-tab="level3">三级事项</span>
+                </div>
+                <label class="biz-time-select" data-time-filter data-panel-key="appeal-hotitem">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="热点事项统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
-            <div class="module-body biz-card__body biz-basicinfo__body">
-              <div class="biz-basicinfo__grid" data-basic-info-stats></div>
+            <div class="module-body biz-card__body biz-appeal-hotitem__body">
+              <div class="biz-appeal-hotitem__chart" data-appeal-hotitem-chart></div>
             </div>
           </section>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--analysis biz-card biz-card--trend biz-panel biz-workorder">
-            <div class="biz-hotrank__head biz-workorder__head">
+          <section class="dt-panel dt-panel--interactive rail-module appeal-rail-module appeal-rail-module--bottom biz-card biz-card--ranking biz-panel biz-appeal-region">
+            <div class="biz-hotrank__head biz-appeal-region__head" data-panel-key="appeal-region">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
-                <span class="biz-hotrank__title">工单办理情况</span>
+                <span class="biz-hotrank__title">热点事项区域分布</span>
+              </div>
+              <div class="biz-panel__actions">
+                <div class="biz-hotrank__tabs" role="tablist" aria-label="区域级别切换" data-appeal-region-tabs>
+                  <span class="biz-hotrank__tab biz-hotrank__tab--active" data-appeal-region-tab="city">市级</span>
+                  <span class="biz-hotrank__tab" data-appeal-region-tab="street">区县</span>
+                  <span class="biz-hotrank__tab" data-appeal-region-tab="community">街办乡镇</span>
+                </div>
+                <label class="biz-time-select" data-time-filter data-panel-key="appeal-region">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="热点事项区域分布统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
-            <div class="module-body biz-card__body biz-trend biz-trend--analysis">
-              <div class="biz-panel__hero biz-panel__hero--compact" data-workbench-trigger="acceptance-rate" role="button" tabindex="0" aria-label="打开受理率案件列表">
-                <div class="biz-panel__hero-main">
-                  <span class="biz-panel__label">受理率</span>
-                  <div class="biz-panel__value-row">
-                    <span class="biz-trend__value" data-count-to="96.4" data-count-format="decimal1">0</span>
-                    <span class="dt-metric__unit">%</span>
-                  </div>
-                </div>
-                <div class="biz-panel__hero-side">
-                  <span class="biz-status-light biz-status-light--normal">稳定</span>
-                  <span class="biz-panel__compare biz-panel__compare--up">同比昨日 +0.9%</span>
-                  <span class="biz-panel__compare">环比上一时段 +0.4%</span>
-                </div>
-              </div>
-              <div class="biz-chart" data-chart="trend"></div>
-              <div class="biz-panel__hero biz-panel__hero--compact biz-panel__hero--closure" data-workbench-trigger="closure-rate" role="button" tabindex="0" aria-label="打开办结率案件列表">
-                <div class="biz-panel__hero-main">
-                  <span class="biz-panel__label">办结率</span>
-                  <div class="biz-panel__value-row">
-                    <span class="biz-trend__value" data-count-to="98.6" data-count-format="decimal1">0</span>
-                    <span class="dt-metric__unit">%</span>
-                  </div>
-                </div>
-                <div class="biz-panel__hero-side">
-                  <span class="biz-status-light biz-status-light--normal">良好</span>
-                  <span class="biz-panel__compare biz-panel__compare--up">同比昨日 +0.8%</span>
-                  <span class="biz-panel__compare">环比上一时段 +0.3%</span>
-                </div>
-              </div>
-              <div class="biz-chart" data-chart="flow-trend"></div>
-              <div class="biz-panel__footer">
-                <div class="biz-panel__tags">
-                  <span class="dt-chip">热点诉求：噪声扰民</span>
-                  <span class="dt-chip">热点区域：天河区</span>
-                </div>
-                <span class="biz-panel__note">统计维度：热线 + 线上渠道</span>
-              </div>
+            <div class="module-body biz-card__body biz-appeal-region__body">
+              <div class="biz-appeal-region__chart" data-appeal-region-chart></div>
             </div>
           </section>
         </aside>
@@ -313,6 +386,16 @@
         <main class="center-stage center-stage--map-only" data-topic-content="appeal-map" hidden>
           <section class="center-stage__viewport center-stage__viewport--map-only">
             <div class="viewport-scene" data-map-topic="appeal-map"></div>
+            <nav class="map-breadcrumb" data-breadcrumb aria-label="地图层级导航">
+              <button class="map-breadcrumb__back" type="button" data-breadcrumb-back aria-label="返回省级地图">
+                <span class="map-breadcrumb__back-icon" aria-hidden="true">&#8592;</span>
+                <span class="map-breadcrumb__back-label">返回全省</span>
+              </button>
+              <span class="map-breadcrumb__sep" aria-hidden="true">/</span>
+              <span class="map-breadcrumb__province">广东省</span>
+              <span class="map-breadcrumb__sep" aria-hidden="true">/</span>
+              <span class="map-breadcrumb__city" data-breadcrumb-city></span>
+            </nav>
             <aside class="map-city-panel" data-city-panel data-city-panel-state="closed" aria-label="地市指标联动面板">
               <div class="map-city-panel__frame">
                 <header class="map-city-panel__head">
@@ -391,105 +474,278 @@
         </main>
 
         <aside class="right-rail rail" data-topic-content="appeal-map" hidden>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--ranking rail-module--right-top biz-card biz-card--ranking biz-panel biz-hotrank" data-workbench-trigger="hotrank" role="button" tabindex="0" aria-label="打开事件热点案件列表">
-            <div class="biz-hotrank__head">
+          <section class="dt-panel dt-panel--interactive rail-module appeal-rail-module appeal-rail-module--top biz-card biz-card--kpi biz-panel biz-appeal-newitem">
+            <div class="biz-hotrank__head biz-appeal-newitem__head" data-panel-key="appeal-newitem">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
-                <span class="biz-hotrank__title">事件热点 Top5</span>
+                <span class="biz-hotrank__title">新点事项TOP5</span>
               </div>
-              <div class="biz-hotrank__tabs" role="tablist" aria-label="排行榜范围切换">
-                <span class="biz-hotrank__tab biz-hotrank__tab--active">TOP5</span>
-                <span class="biz-hotrank__tab">TOP10</span>
+              <div class="biz-panel__actions">
+                <div class="biz-hotrank__tabs" role="tablist" aria-label="事项级别切换" data-appeal-newitem-tabs>
+                  <span class="biz-hotrank__tab biz-hotrank__tab--active" data-appeal-newitem-tab="level1">一级事项</span>
+                  <span class="biz-hotrank__tab" data-appeal-newitem-tab="level2">二级事项</span>
+                  <span class="biz-hotrank__tab" data-appeal-newitem-tab="level3">三级事项</span>
+                </div>
+                <label class="biz-time-select" data-time-filter data-panel-key="appeal-newitem">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="新点事项统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
-            <div class="module-body biz-card__body biz-hotrank__body">
-              <div class="biz-hotrank__summary" data-rank-summary></div>
-              <div class="biz-hotrank__table-head" aria-hidden="true">
+            <div class="module-body biz-card__body biz-appeal-newitem__body">
+              <div class="biz-appeal-newitem__chart" data-appeal-newitem-chart></div>
+            </div>
+          </section>
+          <section class="dt-panel dt-panel--interactive rail-module appeal-rail-module appeal-rail-module--bottom biz-card biz-card--ranking biz-panel biz-appeal-newregion">
+            <div class="biz-hotrank__head biz-appeal-newregion__head" data-panel-key="appeal-newregion">
+              <div class="biz-hotrank__title-wrap">
+                <span class="biz-hotrank__accent"></span>
+                <span class="biz-hotrank__title">新点事项区域分布</span>
+              </div>
+              <div class="biz-panel__actions">
+                <div class="biz-hotrank__tabs" role="tablist" aria-label="区域级别切换" data-appeal-newregion-tabs>
+                  <span class="biz-hotrank__tab biz-hotrank__tab--active" data-appeal-newregion-tab="city">市级</span>
+                  <span class="biz-hotrank__tab" data-appeal-newregion-tab="street">区县</span>
+                  <span class="biz-hotrank__tab" data-appeal-newregion-tab="community">街办乡镇</span>
+                </div>
+                <label class="biz-time-select" data-time-filter data-panel-key="appeal-newregion">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="新点事项区域分布统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+            <div class="module-body biz-card__body biz-appeal-newregion__body">
+              <div class="biz-appeal-newregion__chart" data-appeal-newregion-chart></div>
+            </div>
+          </section>
+        </aside>
+
+        <!-- 诉求事件地图 - 事项详情弹窗 -->
+        <aside class="appeal-detail-panel" data-appeal-detail-panel data-appeal-detail-state="closed" aria-label="事项详情面板">
+          <div class="appeal-detail-panel__frame">
+            <header class="appeal-detail-panel__head">
+              <div class="appeal-detail-panel__head-main">
+                <span class="appeal-detail-panel__accent" aria-hidden="true"></span>
+                <span class="appeal-detail-panel__title">事项详情</span>
+                <span class="appeal-detail-panel__item-name" data-appeal-detail-name></span>
+              </div>
+              <button class="appeal-detail-panel__close" type="button" data-appeal-detail-close aria-label="关闭事项详情">
+                <span aria-hidden="true">×</span>
+              </button>
+            </header>
+            <div class="appeal-detail-panel__body">
+              <div class="appeal-detail-panel__grid">
+                <section class="appeal-detail-card">
+                  <div class="appeal-detail-card__head">
+                    <span class="appeal-detail-card__title">地理分布</span>
+                  </div>
+                  <div class="appeal-detail-card__body">
+                    <div class="appeal-detail-card__chart" data-appeal-detail-geo-chart></div>
+                  </div>
+                </section>
+                <section class="appeal-detail-card">
+                  <div class="appeal-detail-card__head">
+                    <span class="appeal-detail-card__title">工单量趋势</span>
+                  </div>
+                  <div class="appeal-detail-card__body">
+                    <div class="appeal-detail-card__chart" data-appeal-detail-trend-chart></div>
+                  </div>
+                </section>
+                <section class="appeal-detail-card">
+                  <div class="appeal-detail-card__head">
+                    <span class="appeal-detail-card__title">关联单位</span>
+                  </div>
+                  <div class="appeal-detail-card__body">
+                    <div class="appeal-detail-card__chart" data-appeal-detail-unit-chart></div>
+                  </div>
+                </section>
+                <section class="appeal-detail-card">
+                  <div class="appeal-detail-card__head">
+                    <span class="appeal-detail-card__title">属地</span>
+                  </div>
+                  <div class="appeal-detail-card__body">
+                    <div class="appeal-detail-card__chart" data-appeal-detail-area-chart></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <aside class="left-rail rail" data-topic-content="special-analysis" data-topic-scope="special-analysis" hidden>
+          <section class="dt-panel rail-module biz-card biz-card--ranking biz-panel biz-hotrank special-analysis-module special-analysis-hotspots">
+            <div class="biz-hotrank__head special-analysis-module__head special-analysis-hotspots__head">
+              <div class="special-analysis-hotspots__title-row">
+                <div class="biz-hotrank__title-wrap">
+                  <span class="biz-hotrank__accent"></span>
+                  <span class="biz-hotrank__title">事项分析</span>
+                </div>
+                <button class="special-analysis-more" type="button" data-workbench-trigger="special-analysis-items" aria-label="查看更多事项分析数据">更多</button>
+              </div>
+              <div class="biz-panel__actions special-analysis-hotspots__actions">
+                <div class="biz-hotrank__tabs" role="tablist" aria-label="事项分析级别切换">
+                  <span class="biz-hotrank__tab biz-hotrank__tab--active">一级热点</span>
+                  <span class="biz-hotrank__tab">二级热点</span>
+                  <span class="biz-hotrank__tab">三级热点</span>
+                </div>
+              </div>
+            </div>
+            <div class="module-body biz-card__body biz-hotrank__body special-analysis-module__body special-analysis-hotspots__body">
+              <div class="biz-hotrank__table-head special-analysis-hotspots__table-head" aria-hidden="true">
                 <span>排名</span>
-                <span>区域</span>
-                <span>事件量</span>
-                <span>环比昨日</span>
+                <span>热点名称</span>
+                <span>诉求量</span>
+                <span>变化</span>
               </div>
-              <div class="biz-hotrank__list" data-rank-list></div>
+              <div class="biz-hotrank__list special-analysis-hotspots__list">
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="校园周边占道经营" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--medal1">1</span></div>
+                  <span class="biz-hotrank__region">校园周边占道经营</span>
+                  <span class="biz-hotrank__value">1,286</span>
+                  <span class="biz-hotrank__delta">12%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item special-analysis-hotspots__item--down" role="button" tabindex="0" data-special-analysis-item="夜间施工噪声扰民" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--medal2">2</span></div>
+                  <span class="biz-hotrank__region">夜间施工噪声扰民</span>
+                  <span class="biz-hotrank__value">1,042</span>
+                  <span class="biz-hotrank__delta">6%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="老旧小区停车矛盾" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--medal3">3</span></div>
+                  <span class="biz-hotrank__region">老旧小区停车矛盾</span>
+                  <span class="biz-hotrank__value">896</span>
+                  <span class="biz-hotrank__delta">9%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item special-analysis-hotspots__item--down" role="button" tabindex="0" data-special-analysis-item="沿街商铺油烟投诉" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">4</span></div>
+                  <span class="biz-hotrank__region">沿街商铺油烟投诉</span>
+                  <span class="biz-hotrank__value">774</span>
+                  <span class="biz-hotrank__delta">4%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="住宅区充电安全隐患" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">5</span></div>
+                  <span class="biz-hotrank__region">住宅区充电安全隐患</span>
+                  <span class="biz-hotrank__value">683</span>
+                  <span class="biz-hotrank__delta">15%</button>
+                </article>
+              </div>
             </div>
           </section>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--risk rail-module--right-bottom biz-card biz-panel biz-distribution" data-workbench-trigger="distribution" role="button" tabindex="0" aria-label="打开工单类型案件列表">
-            <div class="biz-hotrank__head biz-distribution__head">
+          <section class="dt-panel rail-module biz-card biz-panel biz-distribution special-analysis-module special-analysis-warning">
+            <div class="biz-hotrank__head special-analysis-module__head">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
-                <span class="biz-hotrank__title">工单类型分布</span>
+                <span class="biz-hotrank__title">治理要点预警分析</span>
               </div>
             </div>
-            <div class="module-body biz-card__body biz-distribution__body">
-              <div class="biz-distribution__content" data-distribution-chart></div>
+            <div class="module-body biz-card__body special-analysis-module__body special-analysis-warning__body">
+              <div class="special-analysis-warning__table-head" aria-hidden="true">
+                <span>单位名称</span>
+                <span>群发事项<br>监测数量</span>
+                <span>多发事项<br>监测数量</span>
+                <span>乱点区域<br>监测数量</span>
+                <span>工单件数</span>
+              </div>
+              <div class="special-analysis-warning__list">
+                <article class="special-analysis-warning__item" data-special-analysis-warning-unit="天河区城管局">
+                  <span class="special-analysis-warning__name">天河区城管局</span>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-group-issue-count" data-special-analysis-orders-unit="天河区城管局" aria-label="查看天河区城管局群发事项监测数量详情">18</button>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-frequent-issue-count" data-special-analysis-orders-unit="天河区城管局" aria-label="查看天河区城管局多发事项监测数量详情">23</button>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-chaos-area-count" data-special-analysis-orders-unit="天河区城管局" aria-label="查看天河区城管局乱点区域监测数量详情">7</button>
+                  <button class="special-analysis-warning__value" type="button" data-special-analysis-orders-trigger="warning-order-count" data-special-analysis-orders-unit="天河区城管局" aria-label="查看天河区城管局工单件数详情">426</button>
+                </article>
+                <article class="special-analysis-warning__item" data-special-analysis-warning-unit="越秀区住建局">
+                  <span class="special-analysis-warning__name">越秀区住建局</span>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-group-issue-count" data-special-analysis-orders-unit="越秀区住建局" aria-label="查看越秀区住建局群发事项监测数量详情">15</button>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-frequent-issue-count" data-special-analysis-orders-unit="越秀区住建局" aria-label="查看越秀区住建局多发事项监测数量详情">19</button>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-chaos-area-count" data-special-analysis-orders-unit="越秀区住建局" aria-label="查看越秀区住建局乱点区域监测数量详情">6</button>
+                  <button class="special-analysis-warning__value" type="button" data-special-analysis-orders-trigger="warning-order-count" data-special-analysis-orders-unit="越秀区住建局" aria-label="查看越秀区住建局工单件数详情">381</button>
+                </article>
+                <article class="special-analysis-warning__item" data-special-analysis-warning-unit="南山区应急管理局">
+                  <span class="special-analysis-warning__name">南山区应急管理局</span>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-group-issue-count" data-special-analysis-orders-unit="南山区应急管理局" aria-label="查看南山区应急管理局群发事项监测数量详情">12</button>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-frequent-issue-count" data-special-analysis-orders-unit="南山区应急管理局" aria-label="查看南山区应急管理局多发事项监测数量详情">17</button>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-chaos-area-count" data-special-analysis-orders-unit="南山区应急管理局" aria-label="查看南山区应急管理局乱点区域监测数量详情">5</button>
+                  <button class="special-analysis-warning__value" type="button" data-special-analysis-orders-trigger="warning-order-count" data-special-analysis-orders-unit="南山区应急管理局" aria-label="查看南山区应急管理局工单件数详情">344</button>
+                </article>
+                <article class="special-analysis-warning__item" data-special-analysis-warning-unit="番禺区市场监管局">
+                  <span class="special-analysis-warning__name">番禺区市场监管局</span>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-group-issue-count" data-special-analysis-orders-unit="番禺区市场监管局" aria-label="查看番禺区市场监管局群发事项监测数量详情">10</button>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-frequent-issue-count" data-special-analysis-orders-unit="番禺区市场监管局" aria-label="查看番禺区市场监管局多发事项监测数量详情">14</button>
+                  <button class="special-analysis-warning__metric" type="button" data-special-analysis-orders-trigger="warning-chaos-area-count" data-special-analysis-orders-unit="番禺区市场监管局" aria-label="查看番禺区市场监管局乱点区域监测数量详情">4</button>
+                  <button class="special-analysis-warning__value" type="button" data-special-analysis-orders-trigger="warning-order-count" data-special-analysis-orders-unit="番禺区市场监管局" aria-label="查看番禺区市场监管局工单件数详情">298</button>
+                </article>
+              </div>
+            </div>
+          </section>
+          <section class="dt-panel rail-module biz-card biz-panel biz-basicinfo special-analysis-module special-analysis-bottleneck">
+            <div class="biz-hotrank__head special-analysis-module__head">
+              <div class="biz-hotrank__title-wrap">
+                <span class="biz-hotrank__accent"></span>
+                <span class="biz-hotrank__title">难点堵点分析</span>
+              </div>
+            </div>
+            <div class="module-body biz-card__body biz-basicinfo__body special-analysis-module__body special-analysis-bottleneck__body">
+              <div class="biz-basicinfo__grid special-analysis-bottleneck__grid">
+                <article class="biz-basicinfo__item" role="button" tabindex="0" data-bottleneck-trigger="群众多次不满意" aria-label="查看群众多次不满意联动详情">
+                  <div class="biz-basicinfo__item-head"><span class="biz-basicinfo__item-title">群众多次不满意</span></div>
+                  <div class="biz-basicinfo__value-row"><span class="biz-basicinfo__value">128</span><span class="biz-basicinfo__unit">件</span></div>
+                  <div class="biz-basicinfo__meta-row"><span class="biz-basicinfo__meta">被督办工单量 56</span></div>
+                </article>
+                <article class="biz-basicinfo__item" role="button" tabindex="0" data-bottleneck-trigger="研判批示" aria-label="查看研判批示联动详情">
+                  <div class="biz-basicinfo__item-head"><span class="biz-basicinfo__item-title">研判批示</span></div>
+                  <div class="biz-basicinfo__value-row"><span class="biz-basicinfo__value">64</span><span class="biz-basicinfo__unit">件</span></div>
+                  <div class="biz-basicinfo__meta-row"><span class="biz-basicinfo__meta">环比 +8%</span></div>
+                </article>
+                <article class="biz-basicinfo__item" role="button" tabindex="0" data-bottleneck-trigger="多部门推诿" aria-label="查看多部门推诿联动详情">
+                  <div class="biz-basicinfo__item-head"><span class="biz-basicinfo__item-title">多部门推诿</span></div>
+                  <div class="biz-basicinfo__value-row"><span class="biz-basicinfo__value">39</span><span class="biz-basicinfo__unit">件</span></div>
+                  <div class="biz-basicinfo__meta-row"><span class="biz-basicinfo__meta">环比 -3%</span></div>
+                </article>
+                <article class="biz-basicinfo__item" role="button" tabindex="0" data-bottleneck-trigger="部门多次退单或反复退回" aria-label="查看部门多次退单或反复退回联动详情">
+                  <div class="biz-basicinfo__item-head"><span class="biz-basicinfo__item-title">部门多次退单或反复退回</span></div>
+                  <div class="biz-basicinfo__value-row"><span class="biz-basicinfo__value">52</span><span class="biz-basicinfo__unit">件</span></div>
+                  <div class="biz-basicinfo__meta-row"><span class="biz-basicinfo__meta">环比 +6%</span></div>
+                </article>
+              </div>
             </div>
           </section>
         </aside>
 
-        <aside class="left-rail rail" data-topic-content="special-analysis" hidden>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--ops biz-card biz-card--kpi biz-panel biz-basicinfo">
-            <div class="biz-hotrank__head biz-basicinfo__head">
-              <div class="biz-hotrank__title-wrap">
-                <span class="biz-hotrank__accent"></span>
-                <span class="biz-hotrank__title">基本信息</span>
-              </div>
-            </div>
-            <div class="module-body biz-card__body biz-basicinfo__body">
-              <div class="biz-basicinfo__grid" data-basic-info-stats></div>
-            </div>
-          </section>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--analysis biz-card biz-card--trend biz-panel biz-workorder">
-            <div class="biz-hotrank__head biz-workorder__head">
-              <div class="biz-hotrank__title-wrap">
-                <span class="biz-hotrank__accent"></span>
-                <span class="biz-hotrank__title">工单办理情况</span>
-              </div>
-            </div>
-            <div class="module-body biz-card__body biz-trend biz-trend--analysis">
-              <div class="biz-panel__hero biz-panel__hero--compact" data-workbench-trigger="acceptance-rate" role="button" tabindex="0" aria-label="打开受理率案件列表">
-                <div class="biz-panel__hero-main">
-                  <span class="biz-panel__label">受理率</span>
-                  <div class="biz-panel__value-row">
-                    <span class="biz-trend__value" data-count-to="96.4" data-count-format="decimal1">0</span>
-                    <span class="dt-metric__unit">%</span>
-                  </div>
-                </div>
-                <div class="biz-panel__hero-side">
-                  <span class="biz-status-light biz-status-light--normal">稳定</span>
-                  <span class="biz-panel__compare biz-panel__compare--up">同比昨日 +0.9%</span>
-                  <span class="biz-panel__compare">环比上一时段 +0.4%</span>
-                </div>
-              </div>
-              <div class="biz-chart" data-chart="trend"></div>
-              <div class="biz-panel__hero biz-panel__hero--compact biz-panel__hero--closure" data-workbench-trigger="closure-rate" role="button" tabindex="0" aria-label="打开办结率案件列表">
-                <div class="biz-panel__hero-main">
-                  <span class="biz-panel__label">办结率</span>
-                  <div class="biz-panel__value-row">
-                    <span class="biz-trend__value" data-count-to="98.6" data-count-format="decimal1">0</span>
-                    <span class="dt-metric__unit">%</span>
-                  </div>
-                </div>
-                <div class="biz-panel__hero-side">
-                  <span class="biz-status-light biz-status-light--normal">良好</span>
-                  <span class="biz-panel__compare biz-panel__compare--up">同比昨日 +0.8%</span>
-                  <span class="biz-panel__compare">环比上一时段 +0.3%</span>
-                </div>
-              </div>
-              <div class="biz-chart" data-chart="flow-trend"></div>
-              <div class="biz-panel__footer">
-                <div class="biz-panel__tags">
-                  <span class="dt-chip">热点诉求：噪声扰民</span>
-                  <span class="dt-chip">热点区域：天河区</span>
-                </div>
-                <span class="biz-panel__note">统计维度：热线 + 线上渠道</span>
-              </div>
-            </div>
-          </section>
-        </aside>
-
-        <main class="center-stage center-stage--map-only" data-topic-content="special-analysis" hidden>
+        <main class="center-stage center-stage--map-only" data-topic-content="special-analysis" data-topic-scope="special-analysis" hidden>
           <section class="center-stage__viewport center-stage__viewport--map-only">
             <div class="viewport-scene" data-map-topic="special-analysis"></div>
+            <div class="special-analysis-kpi-overlay" data-special-analysis-kpi></div>
+            <div class="special-analysis-layer-toolbar" data-special-analysis-layer-toolbar hidden aria-label="地图图层控制工具栏">
+              <button class="special-analysis-layer-toolbar__item" type="button" data-special-analysis-layer-toggle="hot-items" aria-pressed="true">
+                <span class="special-analysis-layer-toolbar__label">热点事项</span>
+              </button>
+              <button class="special-analysis-layer-toolbar__item" type="button" data-special-analysis-layer-toggle="bottlenecks" aria-pressed="true">
+                <span class="special-analysis-layer-toolbar__label">难点堵点</span>
+              </button>
+            </div>
+            <nav class="map-breadcrumb" data-breadcrumb aria-label="地图层级导航">
+              <button class="map-breadcrumb__back" type="button" data-breadcrumb-back aria-label="返回省级地图">
+                <span class="map-breadcrumb__back-icon" aria-hidden="true">&#8592;</span>
+                <span class="map-breadcrumb__back-label">返回全省</span>
+              </button>
+              <span class="map-breadcrumb__sep" aria-hidden="true">/</span>
+              <span class="map-breadcrumb__province">广东省</span>
+              <span class="map-breadcrumb__sep" aria-hidden="true">/</span>
+              <span class="map-breadcrumb__city" data-breadcrumb-city></span>
+              <span class="map-breadcrumb__sep" data-breadcrumb-district-sep aria-hidden="true" hidden>/</span>
+              <span class="map-breadcrumb__city" data-breadcrumb-district hidden></span>
+            </nav>
             <aside class="map-city-panel" data-city-panel data-city-panel-state="closed" aria-label="地市指标联动面板">
               <div class="map-city-panel__frame">
                 <header class="map-city-panel__head">
@@ -567,48 +823,273 @@
           </section>
         </main>
 
-        <aside class="right-rail rail" data-topic-content="special-analysis" hidden>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--ranking rail-module--right-top biz-card biz-card--ranking biz-panel biz-hotrank" data-workbench-trigger="hotrank" role="button" tabindex="0" aria-label="打开事件热点案件列表">
-            <div class="biz-hotrank__head">
+        <aside class="right-rail rail" data-topic-content="special-analysis" data-topic-scope="special-analysis" hidden>
+          <section class="dt-panel rail-module biz-card biz-panel biz-workorder special-analysis-module special-analysis-orders">
+            <div class="biz-hotrank__head biz-workorder__head special-analysis-module__head">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
-                <span class="biz-hotrank__title">事件热点 Top5</span>
+                <span class="biz-hotrank__title">诉求工单分析</span>
               </div>
-              <div class="biz-hotrank__tabs" role="tablist" aria-label="排行榜范围切换">
-                <span class="biz-hotrank__tab biz-hotrank__tab--active">TOP5</span>
-                <span class="biz-hotrank__tab">TOP10</span>
-              </div>
+              <div class="biz-panel__actions"></div>
             </div>
-            <div class="module-body biz-card__body biz-hotrank__body">
-              <div class="biz-hotrank__summary" data-rank-summary></div>
-              <div class="biz-hotrank__table-head" aria-hidden="true">
-                <span>排名</span>
-                <span>区域</span>
-                <span>事件量</span>
-                <span>环比昨日</span>
+            <div class="module-body biz-card__body special-analysis-module__body special-analysis-orders__body">
+              <section class="map-orders-card map-orders-card--overview">
+                <div class="map-orders-card__head">
+                  <span class="map-orders-card__title">总览指标</span>
+                  <span class="map-orders-card__meta">实时监测</span>
+                </div>
+                <div class="map-orders-card__content map-orders-card__content--stats special-analysis-orders__stats">
+                  <article class="biz-stat biz-stat--compact" role="button" tabindex="0" data-special-analysis-orders-trigger="total-orders" aria-label="查看总工单量区域分布排名和工单量排名前十区域">
+                    <span class="biz-stat__label">总工单量</span>
+                    <span class="biz-stat__value">18,426</span>
+                    <span class="biz-stat__delta biz-stat__delta--up">环比 +8.6%</span>
+                  </article>
+                  <article class="biz-stat biz-stat--compact" role="button" tabindex="0" data-special-analysis-orders-trigger="in-transit" aria-label="查看在途工单趋势、办理部门排名和预警工单列表">
+                    <span class="biz-stat__label">在途工单</span>
+                    <span class="biz-stat__value">2,318</span>
+                    <span class="biz-stat__delta biz-stat__delta--steady">占比 12.6%</span>
+                  </article>
+                  <article class="biz-stat biz-stat--compact" role="button" tabindex="0" data-special-analysis-orders-trigger="avg-duration" aria-label="查看平均时长区域分布排名和工单量排名前十区域">
+                    <span class="biz-stat__label">平均时长</span>
+                    <span class="biz-stat__value">18.6</span>
+                    <span class="biz-stat__unit">小时</span>
+                  </article>
+                  <article class="biz-stat biz-stat--compact" role="button" tabindex="0" data-special-analysis-orders-trigger="change-rate" aria-label="查看环比变化区域分布排名和工单量排名前十区域">
+                    <span class="biz-stat__label">环比变化</span>
+                    <span class="biz-stat__value">+1,462</span>
+                    <span class="biz-stat__delta biz-stat__delta--up">变化率 +8.6%</span>
+                  </article>
+                </div>
+              </section>
+              <div class="special-analysis-orders__row special-analysis-orders__row--split">
+                <section class="map-orders-card">
+                  <div class="map-orders-card__head">
+                    <span class="map-orders-card__title">工单量趋势</span>
+                    <button class="special-analysis-orders__change-link" type="button" data-special-analysis-orders-trigger="orders-more" aria-label="查看更多诉求工单分析排行">更多</button>
+                  </div>
+                  <div class="map-orders-card__content province-chart province-chart--combo special-analysis-orders__trend">
+                    <div class="province-combo-chart">
+                      <svg viewBox="0 0 320 220" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+                        <defs>
+                          <linearGradient id="special-orders-bar-fill" x1="0" x2="0" y1="0" y2="1">
+                            <stop offset="0%" stop-color="rgba(100, 205, 255, 0.9)" />
+                            <stop offset="100%" stop-color="rgba(28, 92, 164, 0.24)" />
+                          </linearGradient>
+                        </defs>
+                        <line x1="12" x2="308" y1="182" y2="182" stroke="var(--dt-chart-line-dim)" stroke-width="1"></line>
+                        <rect x="20" y="124" width="12" height="58" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="49" y="112" width="12" height="70" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="78" y="98" width="12" height="84" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="107" y="90" width="12" height="92" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="136" y="80" width="12" height="102" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="165" y="70" width="12" height="112" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="194" y="64" width="12" height="118" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="223" y="76" width="12" height="106" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="252" y="88" width="12" height="94" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <rect x="281" y="100" width="12" height="82" rx="4" fill="url(#special-orders-bar-fill)"></rect>
+                        <path d="M26 104 L55 92 L84 84 L113 88 L142 76 L171 66 L200 58 L229 70 L258 82 L287 90" fill="none" stroke="#4de0d4" stroke-width="2.4"></path>
+                        <circle cx="26" cy="104" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="55" cy="92" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="84" cy="84" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="113" cy="88" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="142" cy="76" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="171" cy="66" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="200" cy="58" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="229" cy="70" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="258" cy="82" r="2.6" fill="#4de0d4"></circle>
+                        <circle cx="287" cy="90" r="2.6" fill="#4de0d4"></circle>
+                        <text x="26" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">01</text>
+                        <text x="55" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">02</text>
+                        <text x="84" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">03</text>
+                        <text x="113" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">04</text>
+                        <text x="142" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">05</text>
+                        <text x="171" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">06</text>
+                        <text x="200" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">07</text>
+                        <text x="229" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">08</text>
+                        <text x="258" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">09</text>
+                        <text x="287" y="206" fill="rgba(152,188,208,0.72)" font-size="9" text-anchor="middle">10</text>
+                      </svg>
+                    </div>
+                  </div>
+                </section>
+                <section class="map-orders-card">
+                  <div class="map-orders-card__head">
+                    <span class="map-orders-card__title">异常点预警</span>
+                    <span class="map-orders-card__meta">流式预警</span>
+                  </div>
+                  <div class="map-orders-card__content special-analysis-orders__warning-list">
+                    <article class="special-analysis-orders__warning-item" role="button" tabindex="0" data-special-analysis-orders-trigger="warning-change-rate" aria-label="查看变化率异常详情">
+                      <span class="special-analysis-orders__warning-flag">⚠</span>
+                      <span class="special-analysis-orders__warning-text">2024-06-01 变化率异常 +32%（20%）</span>
+                    </article>
+                    <article class="special-analysis-orders__warning-item" role="button" tabindex="0" data-special-analysis-orders-trigger="warning-in-transit" aria-label="查看在途工单异常详情">
+                      <span class="special-analysis-orders__warning-flag">⚠</span>
+                      <span class="special-analysis-orders__warning-text">2024-06-02 在途工单异常 +26%（18%）</span>
+                    </article>
+                    <article class="special-analysis-orders__warning-item" role="button" tabindex="0" data-special-analysis-orders-trigger="warning-avg-duration" aria-label="查看平均时长异常详情">
+                      <span class="special-analysis-orders__warning-flag">⚠</span>
+                      <span class="special-analysis-orders__warning-text">2024-06-03 平均时长异常 +21%（15%）</span>
+                    </article>
+                  </div>
+                </section>
               </div>
-              <div class="biz-hotrank__list" data-rank-list></div>
+              <section class="map-orders-card">
+                <div class="map-orders-card__head">
+                  <span class="map-orders-card__title">Top5 单位排行</span>
+                  <span class="map-orders-card__meta">承办量 / 办理量</span>
+                </div>
+                <div class="map-orders-card__content map-orders-rank special-analysis-orders__rank">
+                  <article class="map-orders-rank__item">
+                    <span class="map-orders-rank__index">01</span>
+                    <div class="map-orders-rank__main">
+                      <div class="map-orders-rank__head">
+                        <span class="map-orders-rank__label">天河区政务服务中心</span>
+                        <span class="map-orders-rank__value">1,286 / +84</span>
+                      </div>
+                      <div class="map-orders-rank__track"><span class="map-orders-rank__bar" style="width:100%"></span></div>
+                    </div>
+                  </article>
+                  <article class="map-orders-rank__item">
+                    <span class="map-orders-rank__index">02</span>
+                    <div class="map-orders-rank__main">
+                      <div class="map-orders-rank__head">
+                        <span class="map-orders-rank__label">越秀区城运中心</span>
+                        <span class="map-orders-rank__value">1,124 / +63</span>
+                      </div>
+                      <div class="map-orders-rank__track"><span class="map-orders-rank__bar" style="width:87%"></span></div>
+                    </div>
+                  </article>
+                  <article class="map-orders-rank__item">
+                    <span class="map-orders-rank__index">03</span>
+                    <div class="map-orders-rank__main">
+                      <div class="map-orders-rank__head">
+                        <span class="map-orders-rank__label">南山区综合治理办</span>
+                        <span class="map-orders-rank__value">986 / +51</span>
+                      </div>
+                      <div class="map-orders-rank__track"><span class="map-orders-rank__bar" style="width:77%"></span></div>
+                    </div>
+                  </article>
+                  <article class="map-orders-rank__item">
+                    <span class="map-orders-rank__index">04</span>
+                    <div class="map-orders-rank__main">
+                      <div class="map-orders-rank__head">
+                        <span class="map-orders-rank__label">番禺区街面治理专班</span>
+                        <span class="map-orders-rank__value">874 / +38</span>
+                      </div>
+                      <div class="map-orders-rank__track"><span class="map-orders-rank__bar" style="width:68%"></span></div>
+                    </div>
+                  </article>
+                  <article class="map-orders-rank__item">
+                    <span class="map-orders-rank__index">05</span>
+                    <div class="map-orders-rank__main">
+                      <div class="map-orders-rank__head">
+                        <span class="map-orders-rank__label">宝安区热线联动中心</span>
+                        <span class="map-orders-rank__value">816 / +26</span>
+                      </div>
+                      <div class="map-orders-rank__track"><span class="map-orders-rank__bar" style="width:63%"></span></div>
+                    </div>
+                  </article>
+                </div>
+              </section>
             </div>
           </section>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--risk rail-module--right-bottom biz-card biz-panel biz-distribution" data-workbench-trigger="distribution" role="button" tabindex="0" aria-label="打开工单类型案件列表">
-            <div class="biz-hotrank__head biz-distribution__head">
+          <section class="dt-panel rail-module biz-card biz-panel biz-distribution special-analysis-module special-analysis-performance">
+            <div class="biz-hotrank__head biz-distribution__head special-analysis-module__head">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
-                <span class="biz-hotrank__title">工单类型分布</span>
+                <span class="biz-hotrank__title">承办绩效分析</span>
               </div>
             </div>
-            <div class="module-body biz-card__body biz-distribution__body">
-              <div class="biz-distribution__content" data-distribution-chart></div>
+            <div class="module-body biz-card__body special-analysis-module__body special-analysis-performance__body">
+              <article class="special-analysis-performance__item" role="button" tabindex="0" data-special-analysis-performance-trigger="天河区政务服务中心" aria-label="查看天河区政务服务中心承办绩效详情">
+                <div class="special-analysis-performance__head">
+                  <span class="special-analysis-performance__name">天河区政务服务中心</span>
+                  <span class="special-analysis-performance__rank">排名 01</span>
+                </div>
+                <div class="special-analysis-performance__metrics">
+                  <div class="special-analysis-performance__score">
+                    <span class="special-analysis-performance__metric-label">绩效总分</span>
+                    <span class="special-analysis-performance__score-value">96.8</span>
+                  </div>
+                  <div class="special-analysis-performance__meta-grid">
+                    <span class="special-analysis-performance__metric">名次变化 <strong>+2</strong></span>
+                    <span class="special-analysis-performance__metric">第一名分数 <strong>98.2</strong></span>
+                    <span class="special-analysis-performance__metric special-analysis-performance__metric--full">同类平均绩效 <strong>92.4</strong></span>
+                  </div>
+                </div>
+              </article>
+              <article class="special-analysis-performance__item" role="button" tabindex="0" data-special-analysis-performance-trigger="越秀区城运中心" aria-label="查看越秀区城运中心承办绩效详情">
+                <div class="special-analysis-performance__head">
+                  <span class="special-analysis-performance__name">越秀区城运中心</span>
+                  <span class="special-analysis-performance__rank">排名 02</span>
+                </div>
+                <div class="special-analysis-performance__metrics">
+                  <div class="special-analysis-performance__score">
+                    <span class="special-analysis-performance__metric-label">绩效总分</span>
+                    <span class="special-analysis-performance__score-value">95.6</span>
+                  </div>
+                  <div class="special-analysis-performance__meta-grid">
+                    <span class="special-analysis-performance__metric">名次变化 <strong>+1</strong></span>
+                    <span class="special-analysis-performance__metric">第一名分数 <strong>98.2</strong></span>
+                    <span class="special-analysis-performance__metric special-analysis-performance__metric--full">同类平均绩效 <strong>92.4</strong></span>
+                  </div>
+                </div>
+              </article>
+              <article class="special-analysis-performance__item" role="button" tabindex="0" data-special-analysis-performance-trigger="南山区综合治理办" aria-label="查看南山区综合治理办承办绩效详情">
+                <div class="special-analysis-performance__head">
+                  <span class="special-analysis-performance__name">南山区综合治理办</span>
+                  <span class="special-analysis-performance__rank">排名 03</span>
+                </div>
+                <div class="special-analysis-performance__metrics">
+                  <div class="special-analysis-performance__score">
+                    <span class="special-analysis-performance__metric-label">绩效总分</span>
+                    <span class="special-analysis-performance__score-value">94.9</span>
+                  </div>
+                  <div class="special-analysis-performance__meta-grid">
+                    <span class="special-analysis-performance__metric">名次变化 <strong>-1</strong></span>
+                    <span class="special-analysis-performance__metric">第一名分数 <strong>98.2</strong></span>
+                    <span class="special-analysis-performance__metric special-analysis-performance__metric--full">同类平均绩效 <strong>91.8</strong></span>
+                  </div>
+                </div>
+              </article>
+              <article class="special-analysis-performance__item" role="button" tabindex="0" data-special-analysis-performance-trigger="番禺区街面治理专班" aria-label="查看番禺区街面治理专班承办绩效详情">
+                <div class="special-analysis-performance__head">
+                  <span class="special-analysis-performance__name">番禺区街面治理专班</span>
+                  <span class="special-analysis-performance__rank">排名 04</span>
+                </div>
+                <div class="special-analysis-performance__metrics">
+                  <div class="special-analysis-performance__score">
+                    <span class="special-analysis-performance__metric-label">绩效总分</span>
+                    <span class="special-analysis-performance__score-value">93.5</span>
+                  </div>
+                  <div class="special-analysis-performance__meta-grid">
+                    <span class="special-analysis-performance__metric">名次变化 <strong>+3</strong></span>
+                    <span class="special-analysis-performance__metric">第一名分数 <strong>98.2</strong></span>
+                    <span class="special-analysis-performance__metric special-analysis-performance__metric--full">同类平均绩效 <strong>90.6</strong></span>
+                  </div>
+                </div>
+              </article>
             </div>
           </section>
         </aside>
 
         <aside class="left-rail rail" data-topic-content="province-warning" hidden>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--analysis biz-card biz-panel province-panel province-panel--workorder">
-            <div class="biz-hotrank__head">
+          <section class="dt-panel dt-panel--interactive rail-module biz-card biz-panel province-panel province-panel--workorder">
+            <div class="biz-hotrank__head" data-panel-key="province-workorder">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
                 <span class="biz-hotrank__title">工单情况</span>
+              </div>
+              <div class="biz-panel__actions">
+                <label class="biz-time-select" data-time-filter data-panel-key="province-workorder">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="工单情况统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div class="module-body biz-card__body province-workorder">
@@ -622,11 +1103,22 @@
             </div>
           </section>
 
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--ops biz-card biz-panel province-panel province-panel--monitor">
-            <div class="biz-hotrank__head">
+          <section class="dt-panel dt-panel--interactive rail-module biz-card biz-panel province-panel province-panel--monitor">
+            <div class="biz-hotrank__head" data-panel-key="province-monitor">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
                 <span class="biz-hotrank__title">监察指标</span>
+              </div>
+              <div class="biz-panel__actions">
+                <label class="biz-time-select" data-time-filter data-panel-key="province-monitor">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="监察指标统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div class="module-body biz-card__body module-body--grid province-monitor-grid" data-province-monitor-stats></div>
@@ -637,12 +1129,23 @@
           <section class="center-stage__viewport center-stage__viewport--province">
             <div class="province-stage__grid">
               <section class="dt-panel dt-panel--interactive biz-card biz-panel province-card">
-                <div class="biz-hotrank__head province-card__head">
+                <div class="biz-hotrank__head province-card__head" data-panel-key="province-region">
                   <div class="biz-hotrank__title-wrap">
                     <span class="biz-hotrank__accent"></span>
                     <span class="biz-hotrank__title">区域分布情况</span>
                   </div>
-                  <span class="province-card__meta">柱状图</span>
+                  <div class="biz-panel__actions">
+                    <span class="province-card__meta">柱状图</span>
+                    <label class="biz-time-select" data-time-filter data-panel-key="province-region">
+                      <span class="biz-time-select__label">统计时间</span>
+                      <select class="biz-time-select__control" aria-label="区域分布情况统计时间">
+                        <option value="today">今日</option>
+                        <option value="week">本周</option>
+                        <option value="month">本月</option>
+                        <option value="30d">近30日</option>
+                      </select>
+                    </label>
+                  </div>
                 </div>
                 <div class="module-body biz-card__body province-card__body">
                   <div class="province-chart province-chart--bars" data-province-region-chart></div>
@@ -650,12 +1153,23 @@
               </section>
 
               <section class="dt-panel dt-panel--interactive biz-card biz-panel province-card">
-                <div class="biz-hotrank__head province-card__head">
+                <div class="biz-hotrank__head province-card__head" data-panel-key="province-type">
                   <div class="biz-hotrank__title-wrap">
                     <span class="biz-hotrank__accent"></span>
                     <span class="biz-hotrank__title">工单类型分布</span>
                   </div>
-                  <span class="province-card__meta">扇形图</span>
+                  <div class="biz-panel__actions">
+                    <span class="province-card__meta">扇形图</span>
+                    <label class="biz-time-select" data-time-filter data-panel-key="province-type">
+                      <span class="biz-time-select__label">统计时间</span>
+                      <select class="biz-time-select__control" aria-label="工单类型分布统计时间">
+                        <option value="today">今日</option>
+                        <option value="week">本周</option>
+                        <option value="month">本月</option>
+                        <option value="30d">近30日</option>
+                      </select>
+                    </label>
+                  </div>
                 </div>
                 <div class="module-body biz-card__body province-card__body">
                   <div class="biz-distribution__content province-distribution" data-province-type-chart></div>
@@ -663,12 +1177,23 @@
               </section>
 
               <section class="dt-panel dt-panel--interactive biz-card biz-panel province-card">
-                <div class="biz-hotrank__head province-card__head">
+                <div class="biz-hotrank__head province-card__head" data-panel-key="province-governance">
                   <div class="biz-hotrank__title-wrap">
                     <span class="biz-hotrank__accent"></span>
                     <span class="biz-hotrank__title">全省重点治理热点占比</span>
                   </div>
-                  <span class="province-card__meta">扇形图</span>
+                  <div class="biz-panel__actions">
+                    <span class="province-card__meta">扇形图</span>
+                    <label class="biz-time-select" data-time-filter data-panel-key="province-governance">
+                      <span class="biz-time-select__label">统计时间</span>
+                      <select class="biz-time-select__control" aria-label="全省重点治理热点占比统计时间">
+                        <option value="today">今日</option>
+                        <option value="week">本周</option>
+                        <option value="month">本月</option>
+                        <option value="30d">近30日</option>
+                      </select>
+                    </label>
+                  </div>
                 </div>
                 <div class="module-body biz-card__body province-card__body">
                   <div class="biz-distribution__content province-distribution" data-province-governance-chart></div>
@@ -676,12 +1201,23 @@
               </section>
 
               <section class="dt-panel dt-panel--interactive biz-card biz-panel province-card province-card--trend">
-                <div class="biz-hotrank__head province-card__head">
+                <div class="biz-hotrank__head province-card__head" data-panel-key="province-trend">
                   <div class="biz-hotrank__title-wrap">
                     <span class="biz-hotrank__accent"></span>
                     <span class="biz-hotrank__title">全省热点趋势情况</span>
                   </div>
-                  <span class="province-card__meta">12 月趋势</span>
+                  <div class="biz-panel__actions">
+                    <span class="province-card__meta">12 月趋势</span>
+                    <label class="biz-time-select" data-time-filter data-panel-key="province-trend">
+                      <span class="biz-time-select__label">统计时间</span>
+                      <select class="biz-time-select__control" aria-label="全省热点趋势情况统计时间">
+                        <option value="today">今日</option>
+                        <option value="week">本周</option>
+                        <option value="month">本月</option>
+                        <option value="30d">近30日</option>
+                      </select>
+                    </label>
+                  </div>
                 </div>
                 <div class="module-body biz-card__body province-card__body province-card__body--trend">
                   <div class="biz-legend-row province-trend__legend">
@@ -696,27 +1232,249 @@
         </main>
 
         <aside class="right-rail rail" data-topic-content="province-warning" hidden>
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--right-top biz-card biz-panel province-panel province-panel--hotspots">
-            <div class="biz-hotrank__head">
+          <section class="dt-panel dt-panel--interactive rail-module biz-card biz-panel province-panel province-panel--hotspots">
+            <div class="biz-hotrank__head" data-panel-key="province-hotspots">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
                 <span class="biz-hotrank__title">各承办单位问题热点情况</span>
+              </div>
+              <div class="biz-panel__actions">
+                <label class="biz-time-select" data-time-filter data-panel-key="province-hotspots">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="各承办单位问题热点情况统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div class="module-body biz-card__body province-hotspot-list" data-province-unit-hotspots></div>
           </section>
 
-          <section class="dt-panel dt-panel--interactive rail-module rail-module--right-bottom biz-card biz-panel province-panel province-panel--ranking">
-            <div class="biz-hotrank__head">
+          <section class="dt-panel dt-panel--interactive rail-module biz-card biz-panel province-panel province-panel--ranking">
+            <div class="biz-hotrank__head" data-panel-key="province-ranking">
               <div class="biz-hotrank__title-wrap">
                 <span class="biz-hotrank__accent"></span>
                 <span class="biz-hotrank__title">热点问题排名</span>
+              </div>
+              <div class="biz-panel__actions">
+                <label class="biz-time-select" data-time-filter data-panel-key="province-ranking">
+                  <span class="biz-time-select__label">统计时间</span>
+                  <select class="biz-time-select__control" aria-label="热点问题排名统计时间">
+                    <option value="today">今日</option>
+                    <option value="week">本周</option>
+                    <option value="month">本月</option>
+                    <option value="30d">近30日</option>
+                  </select>
+                </label>
               </div>
             </div>
             <div class="module-body biz-card__body province-card__body">
               <div class="province-chart province-chart--rank" data-province-problem-rank></div>
             </div>
           </section>
+        </aside>
+
+        <aside class="special-analysis-panel" data-special-analysis-panel data-special-analysis-panel-state="closed" aria-label="事项分析详情面板">
+          <div class="special-analysis-panel__frame">
+            <header class="special-analysis-panel__head">
+              <div class="special-analysis-panel__head-main">
+                <span class="special-analysis-panel__accent" aria-hidden="true"></span>
+                <div class="special-analysis-panel__head-copy">
+                  <span class="special-analysis-panel__title">事项分析</span>
+                  <span class="special-analysis-panel__subtitle">事项分析 Top10</span>
+                </div>
+              </div>
+              <button class="special-analysis-panel__close" type="button" data-special-analysis-panel-close aria-label="关闭事项分析">
+                <span aria-hidden="true">×</span>
+              </button>
+            </header>
+            <div class="special-analysis-panel__body">
+              <div class="biz-hotrank__table-head special-analysis-panel__table-head" aria-hidden="true">
+                <span>排名</span>
+                <span>热点名称</span>
+                <span>诉求量</span>
+                <span>变化</span>
+              </div>
+              <div class="biz-hotrank__list special-analysis-panel__list">
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="校园周边占道经营" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--medal1">1</span></div>
+                  <span class="biz-hotrank__region">校园周边占道经营</span>
+                  <span class="biz-hotrank__value">1,286</span>
+                  <span class="biz-hotrank__delta">12%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item special-analysis-hotspots__item--down" role="button" tabindex="0" data-special-analysis-item="夜间施工噪声扰民" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--medal2">2</span></div>
+                  <span class="biz-hotrank__region">夜间施工噪声扰民</span>
+                  <span class="biz-hotrank__value">1,042</span>
+                  <span class="biz-hotrank__delta">6%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="老旧小区停车矛盾" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--medal3">3</span></div>
+                  <span class="biz-hotrank__region">老旧小区停车矛盾</span>
+                  <span class="biz-hotrank__value">896</span>
+                  <span class="biz-hotrank__delta">9%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item special-analysis-hotspots__item--down" role="button" tabindex="0" data-special-analysis-item="沿街商铺油烟投诉" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">4</span></div>
+                  <span class="biz-hotrank__region">沿街商铺油烟投诉</span>
+                  <span class="biz-hotrank__value">774</span>
+                  <span class="biz-hotrank__delta">4%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="住宅区充电安全隐患" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">5</span></div>
+                  <span class="biz-hotrank__region">住宅区充电安全隐患</span>
+                  <span class="biz-hotrank__value">683</span>
+                  <span class="biz-hotrank__delta">15%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="城中村环境卫生反复投诉" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">6</span></div>
+                  <span class="biz-hotrank__region">城中村环境卫生反复投诉</span>
+                  <span class="biz-hotrank__value">642</span>
+                  <span class="biz-hotrank__delta">7%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item special-analysis-hotspots__item--down" role="button" tabindex="0" data-special-analysis-item="商业街消防通道堵塞" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">7</span></div>
+                  <span class="biz-hotrank__region">商业街消防通道堵塞</span>
+                  <span class="biz-hotrank__value">598</span>
+                  <span class="biz-hotrank__delta">3%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="学校周边交通秩序整治" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">8</span></div>
+                  <span class="biz-hotrank__region">学校周边交通秩序整治</span>
+                  <span class="biz-hotrank__value">544</span>
+                  <span class="biz-hotrank__delta">11%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item" role="button" tabindex="0" data-special-analysis-item="餐饮集中区油烟异味" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">9</span></div>
+                  <span class="biz-hotrank__region">餐饮集中区油烟异味</span>
+                  <span class="biz-hotrank__value">503</span>
+                  <span class="biz-hotrank__delta">5%</button>
+                </article>
+                <article class="biz-hotrank__item special-analysis-hotspots__item special-analysis-hotspots__item--down" role="button" tabindex="0" data-special-analysis-item="老旧社区照明故障投诉" aria-label="查看事项分析详情">
+                  <div class="biz-hotrank__rank"><span class="biz-hotrank__badge biz-hotrank__badge--num">10</span></div>
+                  <span class="biz-hotrank__region">老旧社区照明故障投诉</span>
+                  <span class="biz-hotrank__value">468</span>
+                  <span class="biz-hotrank__delta">2%</button>
+                </article>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <aside class="bottleneck-panel" data-bottleneck-panel data-bottleneck-state="closed" aria-label="难点堵点分析联动面板">
+          <div class="bottleneck-panel__frame">
+            <header class="bottleneck-panel__head">
+              <div class="bottleneck-panel__head-main">
+                <span class="bottleneck-panel__accent" aria-hidden="true"></span>
+                <div class="bottleneck-panel__head-copy">
+                  <span class="bottleneck-panel__title">难点堵点分析</span>
+                  <span class="bottleneck-panel__subtitle" data-bottleneck-subtitle>群众多次不满意</span>
+                </div>
+              </div>
+              <button class="bottleneck-panel__close" type="button" data-bottleneck-close aria-label="关闭难点堵点分析联动面板">
+                <span aria-hidden="true">×</span>
+              </button>
+            </header>
+            <div class="bottleneck-panel__body">
+              <section class="map-orders-card">
+                <div class="map-orders-card__head">
+                  <span class="map-orders-card__title">部门排名</span>
+                  <span class="map-orders-card__meta">点击联动</span>
+                </div>
+                <div class="map-orders-card__content bottleneck-panel__dept-list" data-bottleneck-dept-list></div>
+              </section>
+              <div class="bottleneck-panel__row bottleneck-panel__row--split">
+                <section class="map-orders-card">
+                  <div class="map-orders-card__head">
+                    <span class="map-orders-card__title">事项热点排名</span>
+                    <span class="map-orders-card__meta">Top5</span>
+                  </div>
+                  <div class="map-orders-card__content province-chart province-chart--rank" data-bottleneck-topic-rank></div>
+                </section>
+                <section class="map-orders-card">
+                  <div class="map-orders-card__head">
+                    <span class="map-orders-card__title">区域排名</span>
+                    <span class="map-orders-card__meta">Top5</span>
+                  </div>
+                  <div class="map-orders-card__content province-chart province-chart--rank" data-bottleneck-area-rank></div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <aside class="special-analysis-detail-panel" data-special-analysis-detail-panel data-special-analysis-detail-state="closed" aria-label="事项分析详情面板">
+          <div class="special-analysis-detail-panel__frame">
+            <header class="special-analysis-detail-panel__head">
+              <div class="special-analysis-detail-panel__head-main">
+                <span class="special-analysis-detail-panel__accent" aria-hidden="true"></span>
+                <span class="special-analysis-detail-panel__title">事项详情</span>
+                <span class="special-analysis-detail-panel__item-name" data-special-analysis-detail-name></span>
+              </div>
+              <button class="special-analysis-detail-panel__close" type="button" data-special-analysis-detail-close aria-label="关闭事项分析详情">
+                <span aria-hidden="true">×</span>
+              </button>
+            </header>
+            <div class="special-analysis-detail-panel__body">
+              <div class="special-analysis-detail-panel__grid">
+                <section class="appeal-detail-card">
+                  <div class="appeal-detail-card__head">
+                    <span class="appeal-detail-card__title">涉事主体</span>
+                  </div>
+                  <div class="appeal-detail-card__body">
+                    <div class="appeal-detail-card__chart" data-special-analysis-detail-subject-chart></div>
+                  </div>
+                </section>
+                <section class="appeal-detail-card">
+                  <div class="appeal-detail-card__head">
+                    <span class="appeal-detail-card__title">工单量趋势</span>
+                  </div>
+                  <div class="appeal-detail-card__body">
+                    <div class="appeal-detail-card__chart" data-special-analysis-detail-trend-chart></div>
+                  </div>
+                </section>
+                <section class="appeal-detail-card">
+                  <div class="appeal-detail-card__head">
+                    <span class="appeal-detail-card__title">关联单位</span>
+                  </div>
+                  <div class="appeal-detail-card__body">
+                    <div class="appeal-detail-card__chart" data-special-analysis-detail-unit-chart></div>
+                  </div>
+                </section>
+                <section class="appeal-detail-card">
+                  <div class="appeal-detail-card__head">
+                    <span class="appeal-detail-card__title">问题属地</span>
+                  </div>
+                  <div class="appeal-detail-card__body">
+                    <div class="appeal-detail-card__chart" data-special-analysis-detail-area-chart></div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <aside class="special-analysis-orders-panel" data-special-analysis-orders-panel data-special-analysis-orders-state="closed" aria-label="诉求工单分析详情面板">
+          <div class="special-analysis-orders-panel__frame">
+            <header class="special-analysis-orders-panel__head">
+              <div class="special-analysis-orders-panel__head-main">
+                <span class="special-analysis-orders-panel__accent" aria-hidden="true"></span>
+                <div class="special-analysis-orders-panel__head-copy">
+                  <span class="special-analysis-orders-panel__title" data-special-analysis-orders-title>诉求工单分析</span>
+                  <span class="special-analysis-orders-panel__subtitle" data-special-analysis-orders-subtitle></span>
+                </div>
+              </div>
+              <button class="special-analysis-orders-panel__close" type="button" data-special-analysis-orders-close aria-label="关闭诉求工单分析详情">
+                <span aria-hidden="true">×</span>
+              </button>
+            </header>
+            <div class="special-analysis-orders-panel__body">
+              <div class="special-analysis-orders-panel__grid" data-special-analysis-orders-panel-content></div>
+            </div>
+          </div>
         </aside>
 
         <aside class="map-workbench" data-workbench data-workbench-state="closed" aria-label="案件列表侧边工作台">
@@ -767,6 +1525,48 @@
                   <span class="map-detail-workbench__section-note">现场回传</span>
                 </div>
                 <div class="map-detail-workbench__images" data-detail-images></div>
+              </section>
+            </div>
+          </div>
+        </aside>
+
+        <aside class="special-analysis-ticket-panel" data-special-analysis-ticket-panel data-special-analysis-ticket-state="closed" aria-label="特殊工单列表面板">
+          <div class="map-workbench__frame special-analysis-ticket-panel__frame">
+            <header class="map-workbench__head">
+              <div class="map-workbench__head-main">
+                <span class="map-workbench__head-accent" aria-hidden="true"></span>
+                <div class="map-workbench__head-copy">
+                  <span class="map-workbench__head-title">特殊工单列表</span>
+                  <span class="map-workbench__head-source" data-special-analysis-ticket-title>工单列表</span>
+                </div>
+              </div>
+              <button class="map-workbench__close" type="button" data-special-analysis-ticket-close aria-label="关闭特殊工单列表">
+                <span aria-hidden="true">×</span>
+              </button>
+            </header>
+            <div class="map-workbench__body">
+              <div class="map-workbench__list" data-special-analysis-ticket-list></div>
+            </div>
+          </div>
+        </aside>
+
+        <aside class="special-analysis-ticket-detail-panel" data-special-analysis-ticket-detail-panel data-special-analysis-ticket-detail-state="closed" aria-label="特殊工单详情面板">
+          <div class="map-detail-workbench__frame special-analysis-ticket-detail-panel__frame">
+            <header class="map-detail-workbench__head">
+              <div class="map-detail-workbench__head-main">
+                <span class="map-detail-workbench__accent" aria-hidden="true"></span>
+                <div class="map-detail-workbench__head-copy">
+                  <span class="map-detail-workbench__title">工单详情</span>
+                  <span class="map-detail-workbench__subtitle" data-special-analysis-ticket-detail-title>案件信息</span>
+                </div>
+              </div>
+              <button class="map-detail-workbench__close" type="button" data-special-analysis-ticket-detail-close aria-label="关闭特殊工单详情">
+                <span aria-hidden="true">×</span>
+              </button>
+            </header>
+            <div class="map-detail-workbench__body">
+              <section class="map-detail-workbench__section map-detail-workbench__section--info">
+                <div class="map-detail-workbench__grid" data-special-analysis-ticket-detail-grid></div>
               </section>
             </div>
           </div>
